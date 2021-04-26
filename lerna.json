@@ -1,0 +1,13 @@
+{
+  "packages": [
+    "packages/egg-visualization",
+    "packages/eeg-visualization-vue"
+  ],
+  "npmClient": "npm",
+  "command": {
+    "publish": {
+      "registry": "https://registry.npmjs.org/"
+    }
+  },
+  "version": "independent"
+}

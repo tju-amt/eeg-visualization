@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "lint": "eslint --fix packages/**/*.js",
+    "dev:install": "lerna bootstrap",
+    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
+  },
+  "devDependencies": {
+    "coveralls": "^3.1.0",
+    "eslint": "^7.25.0",
+    "lerna": "^4.0.0"
+  }
+}

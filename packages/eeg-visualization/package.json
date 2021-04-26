@@ -1,0 +1,29 @@
+{
+  "name": "@tjuamt/eeg-visualization",
+  "version": "0.0.0",
+  "description": "A high-performance eeg wave visualization module in javascritpt by webGL.",
+  "keywords": [
+    "eeg",
+    "realtime",
+    "wave",
+    "webgl",
+    "2d"
+  ],
+  "author": "ChaosLee <chaos2lee@qq.com>",
+  "homepage": "https://github.com/tju-amt/eeg-visualization#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tju-amt/eeg-visualization.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/tju-amt/eeg-visualization/issues"
+  }
+}
