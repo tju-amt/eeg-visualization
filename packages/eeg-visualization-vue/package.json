@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@tjuamt/eeg-visualization": "^0.0.0",
     "core-js": "^3.11.0",
     "vue": "^2.6.12"
   },

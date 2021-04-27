@@ -1,14 +1,8 @@
 {
-  "name": "@tjuamt/eeg-visualization",
+  "name": "pixijs-box",
   "version": "0.0.0",
   "description": "A high-performance eeg wave visualization module in javascritpt by webGL.",
-  "keywords": [
-    "eeg",
-    "realtime",
-    "wave",
-    "webgl",
-    "2d"
-  ],
+  "keywords": [],
   "author": "ChaosLee <chaos2lee@qq.com>",
   "homepage": "https://github.com/tju-amt/eeg-visualization#readme",
   "license": "MIT",
@@ -27,7 +21,6 @@
     "url": "https://github.com/tju-amt/eeg-visualization/issues"
   },
   "dependencies": {
-    "pixi.js": "^6.0.2",
-    "pixijs-box": "^0.0.0"
+    "pixi.js": "^6.0.2"
   }
 }

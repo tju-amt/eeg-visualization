@@ -1,6 +1,7 @@
 {
   "packages": [
-    "packages/egg-visualization",
+    "packages/box",
+    "packages/eeg-visualization",
     "packages/eeg-visualization-vue"
   ],
   "npmClient": "npm",
