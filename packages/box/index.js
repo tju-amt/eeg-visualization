@@ -5,37 +5,52 @@ const STYLE_ATTRIBUTE_NAME_LIST = [
 	'height', 'width'
 ];
 
+const idFont = new PIXI.TextStyle({
+	fontFamily: 'Arial',
+	fontSize: 12,
+	fill: '#000000'
+});
+
 export class PBox {
 	constructor(context) {
 		this.style = {
-			top: 10,
-			left: 10,
-			right: 10,
-			bottom: 10,
+			top: 0,
+			left: 0,
+			right: 0,
+			bottom: 0,
 			height: null,
 			width: null
 		};
 
 		this.container = new PIXI.Container();
+		this.name = '<none>';
 
 		this.children = [];
 		this.parent = null;
 		this.context = context;
 
 		this.mask = new PIXI.Graphics();
-		this.container.mask = this.mask;
 		this.outline = window.o = new PIXI.Graphics();
-		this.container.addChild(this.outline);
+		this.id = new PIXI.Text(this.name, idFont);
+
+		this.container.mask = this.mask;
+		this.outline.addChild(this.id);
+		this.container.addChild(this.mask, this.outline);
 	}
 
 	setMask() {
-		this.mask.clear().drawRect(this.container.x, this.container.y, this.width, this.height);
+		this.mask.clear()
+			.lineStyle(0)
+			.drawRect(0, 0, this.width, this.height);
 	}
 
 	showOutline() {
 		this.outline
 			.clear().lineStyle(1, 0x666666, 1, 0)
-			.drawRect(0, 0, this.width, this.height);
+			.beginFill(0x000000, 0.05)
+			.drawRect(0, 0, this.width, this.height)
+			.drawCircle(this.width / 2, this.height / 2, 10)
+			.endFill();
 	}
 
 	get top() {
@@ -78,12 +93,11 @@ export class PBox {
 		this.container.x = this.left;
 		this.container.y = this.top;
 		this.setMask();
+		this.children.forEach(box => box.render());
 
 		if (this.context.debug) {
 			this.showOutline();
 		}
-
-		this.children.forEach(box => box.render());
 	}
 
 	setStyle(styleObject) {
@@ -104,7 +118,7 @@ export class PViewport {
 		this.app = new PIXI.Application({
 			backgroundColor: 0xfcfcfc,
 			backgroundAlpha: 1,
-			antialias: false,
+			antialias: true,
 			autoDensity: true
 		});
 
