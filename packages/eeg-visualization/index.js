@@ -75,6 +75,9 @@ export default function EegVisualization() {
 		},
 		push() {
 
+		},
+		destroy() {
+			viewport.destroy();
 		}
 	};
 }

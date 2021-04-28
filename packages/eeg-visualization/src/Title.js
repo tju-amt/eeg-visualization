@@ -1,10 +1,8 @@
 
 export default function Coordinate(viewport) {
-	const box = viewport.createBox();
-	const device = viewport.createBox();
-
-	device.name = 1;
-	const datestring = viewport.createBox();
+	const box = viewport.createBox('Title');
+	const device = viewport.createBox('DeviceInfo');
+	const datestring = viewport.createBox('Datetime');
 
 	box.appendBox(device);
 	box.appendBox(datestring);

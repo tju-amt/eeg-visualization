@@ -33,6 +33,9 @@ export default {
 		const eeg = window.eeg = this._egg = EEG();
 
 		eeg.install(this.$refs.eeg);
+	},
+	destroyed() {
+		this._egg.destroy();
 	}
 };
 </script>
@@ -45,6 +48,6 @@ export default {
 	text-align: center;
 	color: #2c3e50;
 	margin-top: 60px;
-  height: 1200px;
+	height: 1200px;
 }
 </style>
