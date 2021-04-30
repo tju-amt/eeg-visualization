@@ -1,4 +1,4 @@
-import { PViewport } from 'pixijs-box';
+import { Viewport } from 'pixijs-box';
 // import { Graphics } from 'pixi.js';
 import Coordinate from './src/Coordinate';
 import Navigator from './src/Navigator';
@@ -13,7 +13,8 @@ const NAVIGATOR_HEIGHT = 60;
 const GUTTER = 5;
 
 export default function EegVisualization() {
-	const viewport = new PViewport();
+	const viewport = new Viewport();
+
 	const coordinate = Coordinate(viewport);
 	const navigator = Navigator(viewport);
 	const channelLabel = ChannelLabel(viewport);

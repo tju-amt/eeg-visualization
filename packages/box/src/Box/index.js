@@ -1,34 +1,27 @@
 import Outline from './Outline';
 import Mask from './Mask';
+import { StyleSheet, STYLE_ATTRIBUTE_NAME_LIST } from './StyleSheet';
 import { Container, Rectangle } from 'pixi.js';
 
-const STYLE_ATTRIBUTE_NAME_LIST = [
-	'top', 'left', 'right', 'bottom',
-	'height', 'width'
-];
+export class Box {
+	constructor() {
+		const container = new Container();
+		const hitArea = new Rectangle();
 
-export default class PBox {
-	constructor(context) {
-		this.style = {
-			top: 0,
-			left: 0,
-			right: 0,
-			bottom: 0,
-			height: null,
-			width: null
-		};
+		container.hitArea = hitArea;
 
-		this.container = new Container();
 		this.name = '';
+		this.style = new StyleSheet();
+		this.container = container;
+		this.hitArea = hitArea;
 
 		this.children = [];
 		this.parent = null;
-		this.context = context;
+		this.context = null;
 
 		this.mask = Mask(this);
 		this.outline = Outline(this);
-
-		this.container.hitArea = this.hitArea = new Rectangle();
+		// Object.freeze(this);
 	}
 
 	get top() {

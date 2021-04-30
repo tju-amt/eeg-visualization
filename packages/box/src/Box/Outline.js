@@ -39,7 +39,7 @@ export default function Outline(box) {
 				.clear().lineStyle(1, 0x666666, 1, 0)
 				.beginFill(0x000000, 0.05)
 				.drawRect(0, 0, box.width, box.height)
-				.beginFill(0xFF0000, 0.3)
+				.beginFill(0x0000FF, 0.3)
 				.drawCircle(center.x, center.y, HANDLER_RADIUS);
 		}
 	};
