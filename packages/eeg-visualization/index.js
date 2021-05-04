@@ -7,13 +7,23 @@ import ChannelLabel from './src/Coordinate/Channel/Lable';
 import ChannelValue from './src/Coordinate/Channel/Value';
 
 const TITLE_HEIGHT = 30;
-const CHANNEL_LABEL_WIDTH = 100;
+const CHANNEL_LABEL_WIDTH = 120;
 const CHANNEL_VALUE_WIDTH = 60;
 const NAVIGATOR_HEIGHT = 60;
 const GUTTER = 5;
 
 export default function EegVisualization() {
 	const viewport = new Viewport();
+	const { context } = viewport;
+
+	window.c = viewport.context;
+	window.a = viewport;
+	context.sampling = true;
+	context.duration = 2000;
+	context.channel = {
+		list: ['FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ'],
+		reference: ['M1', 'M2']
+	};
 
 	const coordinate = Coordinate(viewport);
 	const navigator = Navigator(viewport);

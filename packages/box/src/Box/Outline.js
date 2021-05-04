@@ -28,6 +28,12 @@ export default function Outline(box) {
 		.on('mouseout', () => oId.visible = false);
 
 	return {
+		set visible(value) {
+			oRect.visible = value;
+		},
+		get visible() {
+			return oRect.visible;
+		},
 		render() {
 			const center = { x: box.width / 2, y: box.height / 2 };
 

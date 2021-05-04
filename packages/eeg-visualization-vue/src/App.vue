@@ -1,5 +1,7 @@
 <template>
 	<div id="app">
+		<input type="text" v-model.lazy="width" />
+		<input type="text" v-model.lazy="height" />
 		<button @click="resize">resize</button>
 		<div
 			ref="eeg"
@@ -20,12 +22,14 @@ export default {
 			height: 600
 		};
 	},
-	components: {
+	watch: {
+		width() { this.resize(); },
+		height() { this.resize(); },
 	},
 	methods: {
 		resize() {
-			this.width = 1200;
-			this.height = 900;
+			// this.width = 1280;
+			// this.height = 720;
 			this.$nextTick(() => this._egg.resize());
 		}
 	},

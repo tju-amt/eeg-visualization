@@ -3,13 +3,15 @@ import { Box } from './Box';
 
 export class Viewport {
 	constructor() {
-		this.app = new PIXI.Application({
+		const oFPS = new PIXI.Text('--', { fontSize: 16 });
+		const app = new PIXI.Application({
 			backgroundColor: 0xfcfcfc,
 			backgroundAlpha: 1,
 			antialias: false,
 			autoDensity: true
 		});
 
+		this.app = app;
 		this.context = {
 			debug: true,
 			mounted: false
@@ -18,7 +20,14 @@ export class Viewport {
 		this.container = new PIXI.Container();
 		this.children = [];
 
-		this.app.stage.addChild(this.container);
+		app.stage.addChild(this.container);
+		app.stage.addChild(oFPS);
+
+		this.observer = setInterval(() => {
+			oFPS.visible = this.context.debug;
+			oFPS.text = `${Math.round(app.ticker.FPS)}`;
+		}, 1000);
+
 		Object.freeze(this);
 	}
 
@@ -31,11 +40,11 @@ export class Viewport {
 	}
 
 	get height() {
-		return this.app.view.height;
+		return this.context.mounted ? this.app.view.height : 0;
 	}
 
 	get width() {
-		return this.app.view.width;
+		return this.context.mounted ? this.app.view.width : 0;
 	}
 
 	appendBox(box) {
@@ -69,15 +78,13 @@ export class Viewport {
 	}
 
 	destroy() {
+		clearInterval(this.observer);
+		this.context.mounted = false;
+		this.app.ticker.remove();
 		this.app.destroy();
 	}
 
 	createBox(name = '<none>') {
-		const box = new Box();
-
-		box.context = this.context;
-		box.name = name;
-
-		return box;
+		return new Box(name, this.context, this.app);
 	}
 }

@@ -1,6 +1,5 @@
 import { Container, Rectangle } from "pixi.js";
-import { Viewport } from './Viewport';
-
+import { Viewport } from '../Viewport';
 export class Box {
 	readonly container: Container;
 	readonly hitArea: Rectangle;

@@ -1,26 +1,32 @@
 import Outline from './Outline';
 import Mask from './Mask';
 import { StyleSheet, STYLE_ATTRIBUTE_NAME_LIST } from './StyleSheet';
-import { Container, Rectangle } from 'pixi.js';
+import { Container, Rectangle, Ticker } from 'pixi.js';
 
 export class Box {
-	constructor() {
+	constructor(name, context, app) {
 		const container = new Container();
 		const hitArea = new Rectangle();
 
 		container.hitArea = hitArea;
 
-		this.name = '';
+		this.name = name;
+		this.app = app;
 		this.style = new StyleSheet();
 		this.container = container;
 		this.hitArea = hitArea;
 
 		this.children = [];
 		this.parent = null;
-		this.context = null;
+		this.context = context;
 
 		this.mask = Mask(this);
 		this.outline = Outline(this);
+
+		Ticker.shared.add(() => {
+			this.outline.visible = this.context.debug;
+		});
+
 		// Object.freeze(this);
 	}
 
