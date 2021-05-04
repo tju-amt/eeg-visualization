@@ -22,15 +22,9 @@ export default {
 			height: 600
 		};
 	},
-	watch: {
-		width() { this.resize(); },
-		height() { this.resize(); },
-	},
 	methods: {
 		resize() {
-			// this.width = 1280;
-			// this.height = 720;
-			this.$nextTick(() => this._egg.resize());
+
 		}
 	},
 	mounted() {

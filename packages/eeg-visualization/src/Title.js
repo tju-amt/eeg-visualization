@@ -1,5 +1,5 @@
 
-export default function Coordinate(viewport) {
+export default function Title(viewport) {
 	const box = viewport.createBox('Title');
 	const device = viewport.createBox('DeviceInfo');
 	const datestring = viewport.createBox('Datetime');

@@ -37,7 +37,7 @@ export default function Coordinate(viewport) {
 		state.valueList.forEach((value, index) => oValueList[index].text = `${value}`);
 	}
 
-	setInterval(() => {
+	box.context.setInterval(() => {
 		state.valueList.forEach((_, index) => state.valueList[index] = Math.random().toFixed(2));
 	}, 1000);
 

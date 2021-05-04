@@ -74,15 +74,9 @@ export default function EegVisualization() {
 	viewport.appendBox(channelValue.box);
 	viewport.appendBox(title.box);
 
-	const elementList = [];
-
 	return {
 		install(element) {
 			viewport.mount(element);
-		},
-		resize() {
-			viewport.resize();
-			elementList.forEach(element => element.resize());
 		},
 		push() {
 

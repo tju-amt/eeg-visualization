@@ -5,7 +5,7 @@ declare namespace Context {
 
 	namespace Watching {
 		type Checker = (context: ContextProxy, scope: Scope, now: number) => boolean;
-		type Listener = (now: number, context: ContextProxy) => unknown;
+		type Listener = (context: ContextProxy, now: number) => unknown;
 
 		interface Scope {
 			[key: string]: any;

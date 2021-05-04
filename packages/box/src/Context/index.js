@@ -1,3 +1,5 @@
+import { install } from './preset';
+
 function ContextProxy(context) {
 	return {
 		get app() {
@@ -17,28 +19,31 @@ function ContextProxy(context) {
 
 export class Context {
 	constructor(app) {
+		const watching = {};
+		const proxy = ContextProxy(this);
+
 		this.app = app;
 		this.debug = true;
 		this.mounted = true;
 		this.state = {};
-		this.watching = {};
+		this.watching = watching;
 		this.timerId = 0;
 
-		Object.preventExtensions(this);
-
-		const proxy = ContextProxy(this);
+		// Object.preventExtensions(this);
 
 		this.app.ticker.add(() => {
 			const now = Date.now();
 
-			for (const event in this.watching) {
-				const { checher, listeners, scope } = this.watching[event];
+			for (const event in watching) {
+				const { checker, listeners, scope } = watching[event];
 
-				if (checher(scope, now, proxy)) {
-					listeners.forEach(listener => listener(now, proxy));
+				if (checker(proxy, scope, now )) {
+					listeners.forEach(listener => listener(proxy, now));
 				}
 			}
 		});
+
+		install(this);
 	}
 
 	watch(event, checker, initScope = {}) {
@@ -52,13 +57,14 @@ export class Context {
 	}
 
 	unwatch(event) {
+		console.log(event);
 		delete this.watching[event];
 
 		return this;
 	}
 
 	on(event, listener) {
-		this.watching[event].push(listener);
+		this.watching[event].listeners.push(listener);
 
 		return this;
 	}
@@ -77,10 +83,10 @@ export class Context {
 		return this;
 	}
 
-	setInternal(callback, ms) {
+	setInterval(callback, ms) {
 		const id = `i${this.timerId++}`;
 
-		this.watch(id, (scope, now) => {
+		this.watch(id, (_context, scope, now) => {
 			if (now > scope.last + ms) {
 				scope.last = now;
 

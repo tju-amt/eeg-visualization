@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js';
 import { Box } from './Box';
+import { Context } from './Context';
 
 export class Viewport {
 	constructor() {
-		const oFPS = new PIXI.Text('--', { fontSize: 16 });
 		const app = new PIXI.Application({
 			backgroundColor: 0xfcfcfc,
 			backgroundAlpha: 1,
@@ -12,21 +12,29 @@ export class Viewport {
 		});
 
 		this.app = app;
-		this.context = {
-			debug: true,
-			mounted: false
-		};
+		this.context = new Context(app);
 
 		this.container = new PIXI.Container();
 		this.children = [];
 
 		app.stage.addChild(this.container);
+
+		const oFPS = new PIXI.Text('00', {
+			fontSize: 16,
+			fontWeight: 'bold',
+			fontFamily: 'Consolas',
+			fill: 0xFFFF00,
+			stroke: 0x000000,
+			strokeThickness: 4,
+		});
+
 		app.stage.addChild(oFPS);
 
-		this.observer = setInterval(() => {
-			oFPS.visible = this.context.debug;
-			oFPS.text = `${Math.round(app.ticker.FPS)}`;
-		}, 1000);
+		this.observer = this.context
+			.on('debug-open', () => oFPS.visible = true)
+			.on('debug-close', () => oFPS.visible = false)
+			.on('resize', () => app.resize())
+			.setInterval(() => oFPS.text = `${Math.round(app.ticker.FPS)}`, 1000);
 
 		Object.freeze(this);
 	}
@@ -51,16 +59,6 @@ export class Viewport {
 		box.parent = this;
 		this.children.push(box);
 		this.container.addChild(box.container);
-		box.render();
-	}
-
-	render() {
-		this.children.forEach(box => box.render());
-	}
-
-	resize() {
-		this.app.resize();
-		this.render();
 	}
 
 	mount(element) {
@@ -72,15 +70,12 @@ export class Viewport {
 		this.container.y = 0;
 
 		this.context.mounted = true;
-		this.render();
 
 		return this;
 	}
 
 	destroy() {
-		clearInterval(this.observer);
 		this.context.mounted = false;
-		this.app.ticker.remove();
 		this.app.destroy();
 	}
 

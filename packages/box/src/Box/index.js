@@ -1,7 +1,7 @@
 import Outline from './Outline';
 import Mask from './Mask';
 import { StyleSheet, STYLE_ATTRIBUTE_NAME_LIST } from './StyleSheet';
-import { Container, Rectangle, Ticker } from 'pixi.js';
+import { Container, Rectangle } from 'pixi.js';
 
 export class Box {
 	constructor(name, context, app) {
@@ -21,13 +21,14 @@ export class Box {
 		this.context = context;
 
 		this.mask = Mask(this);
-		this.outline = Outline(this);
 
-		Ticker.shared.add(() => {
-			this.outline.visible = this.context.debug;
-		});
+		const outline = this.outline = Outline(this);
 
-		// Object.freeze(this);
+		context
+			.on('mounted', () => this.render())
+			.on('debug-close', () => outline.visible = false)
+			.on('debug-open', () => outline.visible = true)
+			.on('resize', () => this.render());
 	}
 
 	get top() {
@@ -59,14 +60,9 @@ export class Box {
 		box.context = this.context;
 		this.children.push(box);
 		this.container.addChild(box.container);
-		box.render();
 	}
 
 	render() {
-		if (!this.context.mounted) {
-			return;
-		}
-
 		const { height, width, top, left } = this;
 
 		this.hitArea.height = height;
@@ -74,11 +70,7 @@ export class Box {
 		this.container.x = left;
 		this.container.y = top;
 		this.mask.update();
-		this.children.forEach(box => box.render());
-
-		if (this.context.debug) {
-			this.outline.render();
-		}
+		this.outline.render();
 	}
 
 	setStyle(styleObject) {
@@ -88,7 +80,7 @@ export class Box {
 			}
 		});
 
-		this.render();
+		// this.render();
 
 		return this;
 	}
