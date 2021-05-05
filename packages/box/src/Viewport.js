@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import { Box } from './Box';
 import { Context } from './Context';
 
 export class Viewport {
@@ -55,7 +54,7 @@ export class Viewport {
 		return this.context.mounted ? this.app.view.width : 0;
 	}
 
-	appendBox(box) {
+	appendChild(box) {
 		box.parent = this;
 		this.children.push(box);
 		this.container.addChild(box.container);
@@ -79,7 +78,7 @@ export class Viewport {
 		this.app.destroy();
 	}
 
-	createBox(name = '<none>') {
-		return new Box(name, this.context, this.app);
+	createBox(BoxClass) {
+		return new BoxClass(this.context);
 	}
 }

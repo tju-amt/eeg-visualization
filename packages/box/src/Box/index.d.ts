@@ -1,5 +1,7 @@
 import { Container, Rectangle } from "pixi.js";
 import { Viewport } from '../Viewport';
+import { Context } from '../Context';
+
 export class Box {
 	readonly container: Container;
 	readonly hitArea: Rectangle;
@@ -8,7 +10,7 @@ export class Box {
 	readonly children: Box[];
 
 	parent: Box | Viewport | null;
-	context: object;
+	context: Context;
 	mask: object;
 	outline: object;
 
@@ -20,4 +22,5 @@ export class Box {
 	appendChild(box: Box): void;
 	render(): void;
 	setStyle(styleObject): this;
+	created(): unknown;
 }

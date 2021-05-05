@@ -5,7 +5,7 @@ declare namespace Context {
 
 	namespace Watching {
 		type Checker = (context: ContextProxy, scope: Scope, now: number) => boolean;
-		type Listener = (context: ContextProxy, now: number) => unknown;
+		type Listener = () => unknown;
 
 		interface Scope {
 			[key: string]: any;
@@ -94,6 +94,12 @@ export class Context {
 
 	/**
 	 *
+	 * @param id
+	 */
+	clearInterval(id: Context.TimerId): void;
+
+	/**
+	 *
 	 * @param callback
 	 * @param ms
 	 */
@@ -103,11 +109,9 @@ export class Context {
 	 *
 	 * @param id
 	 */
-	clearInterval(id: Context.TimerId): void;
-
-	/**
-	 *
-	 * @param id
-	 */
 	clearTimeout(id: Context.TimerId): void;
+
+	setFrame(callback): Context.TimerId;
+
+	clearFrame(id: Context.TimerId): void;
 }

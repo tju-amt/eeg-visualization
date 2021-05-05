@@ -20,6 +20,7 @@ function ContextProxy(context) {
 export class Context {
 	constructor(app) {
 		const watching = {};
+		const everytime = {};
 		const proxy = ContextProxy(this);
 
 		this.app = app;
@@ -27,6 +28,7 @@ export class Context {
 		this.mounted = true;
 		this.state = {};
 		this.watching = watching;
+		this.everytime = everytime;
 		this.timerId = 0;
 
 		// Object.preventExtensions(this);
@@ -37,9 +39,11 @@ export class Context {
 			for (const event in watching) {
 				const { checker, listeners, scope } = watching[event];
 
-				if (checker(proxy, scope, now )) {
-					listeners.forEach(listener => listener(proxy, now));
-				}
+				checker(proxy, scope, now) && listeners.forEach(listener => listener());
+			}
+
+			for (const fn in everytime) {
+				everytime[fn]();
 			}
 		});
 
@@ -57,7 +61,6 @@ export class Context {
 	}
 
 	unwatch(event) {
-		console.log(event);
 		delete this.watching[event];
 
 		return this;
@@ -75,12 +78,22 @@ export class Context {
 		if (listeners) {
 			const index = listeners.indexOf(listener);
 
-			if (index !== -1) {
-				listeners.splice(index, 1);
-			}
+			index !== -1 && listeners.splice(index, 1);
 		}
 
 		return this;
+	}
+
+	setFrame(callback) {
+		const id = `f${this.timerId++}`;
+
+		this.everytime[id] = callback;
+
+		return id;
+	}
+
+	clearFrame(id) {
+		delete this.everytime[id];
 	}
 
 	setInterval(callback, ms) {
@@ -101,6 +114,11 @@ export class Context {
 		return id;
 	}
 
+	clearInterval(id) {
+		this.unwatch(id);
+	}
+
+
 	setTimeout(callback, ms) {
 		const id = `t${this.timerId++}`;
 		const from = Date.now();
@@ -114,11 +132,6 @@ export class Context {
 
 		return id;
 	}
-
-	clearInterval(id) {
-		this.unwatch(id);
-	}
-
 	clearTimeout(id) {
 		this.unwatch(id);
 	}

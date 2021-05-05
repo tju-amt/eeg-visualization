@@ -24,6 +24,7 @@ export default function Outline(box) {
 	oRect.addChild(oId);
 
 	oRect
+		.on('click', () => console.log(box))
 		.on('mouseover', () => oId.visible = true)
 		.on('mouseout', () => oId.visible = false);
 

@@ -4,14 +4,13 @@ import { StyleSheet, STYLE_ATTRIBUTE_NAME_LIST } from './StyleSheet';
 import { Container, Rectangle } from 'pixi.js';
 
 export class Box {
-	constructor(name, context, app) {
+	constructor(context) {
 		const container = new Container();
 		const hitArea = new Rectangle();
+		const box = this;
 
 		container.hitArea = hitArea;
 
-		this.name = name;
-		this.app = app;
 		this.style = new StyleSheet();
 		this.container = container;
 		this.hitArea = hitArea;
@@ -20,15 +19,31 @@ export class Box {
 		this.parent = null;
 		this.context = context;
 
-		this.mask = Mask(this);
+		const mask = Mask(this);
+		const outline = Outline(this);
 
-		const outline = this.outline = Outline(this);
+		const render = () => {
+			const { height, width, top, left } = box;
+
+			hitArea.height = height;
+			hitArea.width = width;
+			container.x = left;
+			container.y = top;
+			mask.update();
+			outline.render();
+		};
 
 		context
-			.on('mounted', () => this.render())
 			.on('debug-close', () => outline.visible = false)
 			.on('debug-open', () => outline.visible = true)
-			.on('resize', () => this.render());
+			.on('mounted', () => render())
+			.on('resize', () => render());
+
+		this.created();
+	}
+
+	get name() {
+		return this.constructor.name;
 	}
 
 	get top() {
@@ -55,22 +70,11 @@ export class Box {
 			: this.style.width;
 	}
 
-	appendBox(box) {
+	appendChild(box) {
 		box.parent = this;
 		box.context = this.context;
 		this.children.push(box);
 		this.container.addChild(box.container);
-	}
-
-	render() {
-		const { height, width, top, left } = this;
-
-		this.hitArea.height = height;
-		this.hitArea.width = width;
-		this.container.x = left;
-		this.container.y = top;
-		this.mask.update();
-		this.outline.render();
 	}
 
 	setStyle(styleObject) {
@@ -80,8 +84,8 @@ export class Box {
 			}
 		});
 
-		// this.render();
-
 		return this;
 	}
+
+	created() {}
 }

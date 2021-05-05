@@ -1,78 +1,65 @@
-import { Viewport } from 'pixijs-box';
-// import { Graphics } from 'pixi.js';
-import Coordinate from './src/Coordinate';
-import Navigator from './src/Navigator';
-import Title from './src/Title';
-import ChannelLabel from './src/Coordinate/Channel/Lable';
-import ChannelValue from './src/Coordinate/Channel/Value';
+import { Viewport, assembly } from 'pixijs-box';
 
-const TITLE_HEIGHT = 30;
-const CHANNEL_LABEL_WIDTH = 120;
-const CHANNEL_VALUE_WIDTH = 60;
-const NAVIGATOR_HEIGHT = 60;
-const GUTTER = 5;
+import { Title, TitleDate, TitleDevice } from './src/Element/Title';
+import { Monitor, ChannelLabel, LastValue, Chart, Scroller, Legend } from './src/Element/Monitor';
+import { Navigator } from './src/Element/Navigator';
+
+import layout from './src/layout';
 
 export default function EegVisualization() {
 	const viewport = new Viewport();
+
 	const { context } = viewport;
 
 	window.c = viewport.context;
 	window.a = viewport;
-	context.sampling = true;
-	context.duration = 2000;
-	context.channel = {
+
+	context.state.sampling = true;
+	context.state.interval = 2000;
+	context.state.channel = {
 		list: ['FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ'],
 		reference: ['M1', 'M2']
 	};
 
-	const coordinate = Coordinate(viewport);
-	const navigator = Navigator(viewport);
-	const channelLabel = ChannelLabel(viewport);
-	const channelValue = ChannelValue(viewport);
-	const title = Title(viewport);
+	context
+		.watch('sampling-on', (context, scope) => {
+			const { sampling } = context.state;
 
-	coordinate.box.setStyle({
-		top: TITLE_HEIGHT + 2 * GUTTER,
-		left: CHANNEL_LABEL_WIDTH + 2 * GUTTER,
-		right: CHANNEL_VALUE_WIDTH + 2 * GUTTER,
-		bottom: NAVIGATOR_HEIGHT + 2 * GUTTER
-	});
+			if (sampling !== scope.sampling) {
+				scope.sampling = sampling;
 
-	navigator.box.setStyle({
-		top: null,
-		left: CHANNEL_LABEL_WIDTH + 2 * GUTTER,
-		right: CHANNEL_VALUE_WIDTH + 2 * GUTTER,
-		bottom: GUTTER,
-		height: NAVIGATOR_HEIGHT
-	});
+				return sampling;
+			}
 
-	channelLabel.box.setStyle({
-		top: TITLE_HEIGHT + 2 * GUTTER,
-		width: CHANNEL_LABEL_WIDTH,
-		left: GUTTER,
-		bottom: NAVIGATOR_HEIGHT + 2 * GUTTER
-	});
+			return false;
+		}, { sampling: null })
+		.watch('sampling-off', (context, scope) => {
+			const { sampling } = context.state;
 
-	channelValue.box.setStyle({
-		top: TITLE_HEIGHT + 2 * GUTTER,
-		width: CHANNEL_VALUE_WIDTH,
-		right: GUTTER,
-		bottom: NAVIGATOR_HEIGHT + 2 * GUTTER,
-		left: null
-	});
+			if (sampling !== scope.sampling) {
+				scope.sampling = sampling;
 
-	title.box.setStyle({
-		top: GUTTER,
-		left: GUTTER,
-		right: GUTTER,
-		height: TITLE_HEIGHT
-	});
+				return !sampling;
+			}
 
-	viewport.appendBox(coordinate.box);
-	viewport.appendBox(navigator.box);
-	viewport.appendBox(channelLabel.box);
-	viewport.appendBox(channelValue.box);
-	viewport.appendBox(title.box);
+			return false;
+		}, { sampling: null }).watch('interval-change', (context, scope) => {
+			const { interval } = context.state;
+
+			if (interval !== scope.interval) {
+				scope.interval = interval;
+
+				return true;
+			}
+
+			return false;
+		}, { interval: null });
+
+	assembly({
+		Title, TitleDevice, TitleDate,
+		Monitor, ChannelLabel, LastValue, Chart, Scroller, Legend,
+		Navigator
+	}, layout, viewport);
 
 	return {
 		install(element) {

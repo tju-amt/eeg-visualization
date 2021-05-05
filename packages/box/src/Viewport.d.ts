@@ -1,9 +1,10 @@
 import { Box } from './Box';
 import { Application, Container } from 'pixi.js';
+import { Context } from './Context';
 
 declare class Viewport {
 	readonly app: Application;
-	readonly context: object;
+	readonly context: Context;
 	readonly container: Container;
 	readonly children: Box[];
 

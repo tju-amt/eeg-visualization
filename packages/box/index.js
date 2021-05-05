@@ -1,2 +1,3 @@
 export { Viewport } from './src/Viewport';
-// export {} from './src/Generator';
+export { Box } from './src/Box';
+export { assembly } from './src/Generator';
