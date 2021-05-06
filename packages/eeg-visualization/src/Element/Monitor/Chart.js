@@ -53,8 +53,7 @@ export class Chart extends Box {
 			.on('interval-change', () => setTimeline(Date.now()))
 			.on('sampling-on', () => {
 				oScanner.visible = true;
-				state.scannerTimer = this.context.setFrame(() => {
-					const now = Date.now();
+				state.scannerTimer = this.context.watch((_context, _scope, now) => {
 					const { interval } = this.context.state;
 
 					if (now > state.end) {

@@ -4,8 +4,9 @@ declare namespace Context {
 	interface State {}
 
 	namespace Watching {
-		type Checker = (context: ContextProxy, scope: Scope, now: number) => boolean;
+		type Expression = (context: Context, scope: Scope, now: number) => boolean;
 		type Listener = () => unknown;
+		type ListenerList = Listener[];
 
 		interface Scope {
 			[key: string]: any;
@@ -16,30 +17,52 @@ declare namespace Context {
 			 * A function describing how and when dispatching this event
 			 * by returning `true`.
 			 */
-			checker: Checker;
+			expression: Expression;
 
 			/**
-			 * All listeners of this event.
-			 */
-			listeners: Listener[];
-
-			/**
-			 * An isolating data object for checker to check current state with
+			 * An isolating data object for expression to check current state with
 			 * the previous state.
 			 */
 			scope: Scope;
 		}
+
+		interface TaskMap {
+			[id: string]: Task;
+		}
+
+		namespace Timer {
+			interface IntervalTask {
+				fn: TimerCallback;
+				ms: number;
+				calledAt: number;
+			}
+
+			interface TimeoutTask {
+				fn: TimerCallback;
+				ms: number;
+				createdAt: number;
+			}
+
+			interface IntervalMap {
+				[id: string]: IntervalTask;
+			}
+
+			interface TimeoutMap {
+				[id: string]: TimeoutTask;
+			}
+		}
+
+		interface TimerNamespace {
+			intervals: Timer.IntervalMap,
+			timeouts: Timer.TimeoutMap
+		}
 	}
 
 	interface Watching {
-		[event: string]: Task
-	}
-
-	interface ContextProxy {
-		readonly app: Application;
-		readonly debug: boolean;
-		readonly mounted: boolean;
-		readonly state: Context.State;
+		id: number;
+		tasks: Watching.TaskMap;
+		events: Watching.ListenerList;
+		timer: Watching.TimerNamespace;
 	}
 
 	type TimerId = string;
@@ -55,21 +78,20 @@ export class Context {
 	state: Context.State;
 
 	watching: Context.Watching;
-	timerId: number;
 
 	/**
 	 *
 	 * @param event
-	 * @param checker
+	 * @param expression
 	 * @param initScope
 	 */
-	watch(event: string, checker: Context.Watching.Checker, initScope?: Context.Watching.Scope): this;
+	watch(expression: Context.Watching.Expression, initScope?: Context.Watching.Scope): Context.TimerId;
 
 	/**
 	 *
-	 * @param event
+	 * @param id
 	 */
-	unwatch(event: string): this;
+	unwatch(id: string): void;
 
 	/**
 	 *
@@ -85,12 +107,14 @@ export class Context {
 	 */
 	off(event: string, listener: Context.Watching.Listener): this;
 
+	emit(event: string): this;
+
 	/**
 	 *
 	 * @param callback
 	 * @param ms
 	 */
-	setInterval(callback: TimerCallback, ms: number): Context.TimerId;
+	setInterval(callback: Context.TimerCallback, ms: number): Context.TimerId;
 
 	/**
 	 *
@@ -103,15 +127,11 @@ export class Context {
 	 * @param callback
 	 * @param ms
 	 */
-	setTimeout(callback: TimerCallback, ms: number): Context.TimerId;
+	setTimeout(callback: Context.TimerCallback, ms: number): Context.TimerId;
 
 	/**
 	 *
 	 * @param id
 	 */
 	clearTimeout(id: Context.TimerId): void;
-
-	setFrame(callback): Context.TimerId;
-
-	clearFrame(id: Context.TimerId): void;
 }

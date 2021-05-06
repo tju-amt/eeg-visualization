@@ -2,58 +2,75 @@
  * @param {import('./').Context} context
  */
 export function install(context) {
-	context
-		.watch('resize', (context, scope) => {
-			const { resizeTo: element } = context.app;
+	context.watch((context, scope) => {
+		const { resizeTo: element } = context.app;
 
+		if (element !== scope.element) {
+			scope.element = element;
+
+			if (element !== null) {
+				scope.height = element.offsetHeight;
+				scope.width = element.offsetWidth;
+				context.emit('resize');
+			} else {
+				scope.height = null;
+				scope.width = null;
+				scope.element = null;
+			}
+		} else {
 			let changed = false;
 
-			if (element !== scope.element) {
+			if (element.offsetHeight !== scope.height) {
+				scope.height = element.offsetHeight;
+				context.emit('resize-height');
 				changed = true;
-			} else if (element !== null) {
-				changed =
-					element.offsetHeight !== scope.height ||
-					element.offsetWidth !== scope.width;
+			}
+
+			if (element.offsetWidth !== scope.width) {
+				scope.width = element.offsetWidth;
+				context.emit('resize-width');
+				changed = true;
 			}
 
 			if (changed) {
-				scope.element = element;
-				scope.height = element === null ? 0 : element.offsetHeight;
-				scope.width = element === null ? 0 : element.offsetWidth;
+				context.emit('resize');
 			}
+		}
+	}, { element: null, height: 0, width: 0 });
 
-			return changed;
-		}, { element: null, height: 0, width: 0 })
-		.watch('debug-open', (context, scope) => {
-			if (context.debug !== scope.debug) {
-				scope.debug = context.debug;
+	context.watch((context, scope) => {
+		if (context.debug !== scope.debug) {
+			scope.debug = context.debug;
+			context.emit(scope.debug ? 'debug-on' : 'debug-off');
+		}
+	}, { debug: null });
+
+	context.watch((context, scope) => {
+		if (context.mounted !== scope.flag) {
+			scope.flag = context.mounted;
+			context.emit(scope.flag ? 'mounted': 'unmounted');
+		}
+	}, { flag: null });
+
+	context.watch((context, _scope, now) => {
+		const { intervals, timeouts } = context.watching.timer;
+
+		for(const timerId in intervals) {
+			const task = intervals[timerId];
+
+			if (now > task.calledAt + task.ms) {
+				task.fn();
+				task.calledAt = now;
 			}
+		}
 
-			return context.debug;
-		}, { debug: null })
-		.watch('debug-close', (context, scope) => {
-			if (context.debug !== scope.debug) {
-				scope.debug = context.debug;
+		for(const timerId in timeouts) {
+			const task = timeouts[timerId];
+
+			if (now > task.createdAt + task.ms) {
+				task.fn();
+				delete timeouts[timerId];
 			}
-
-			return !context.debug;
-		}, { debug: null })
-		.watch('mounted', (context, scope) => {
-			if (context.mounted !== scope.flag) {
-				scope.flag = context.mounted;
-
-				return context.mounted;
-			}
-
-			return false;
-		}, { flag: null })
-		.watch('unmouned', (context, scope) => {
-			if (context.mounted !== scope.flag) {
-				scope.flag = context.mounted;
-
-				return !context.mounted;
-			}
-
-			return false;
-		}, { flag: null });
+		}
+	});
 }

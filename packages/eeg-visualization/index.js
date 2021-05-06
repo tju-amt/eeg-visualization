@@ -25,50 +25,26 @@ export default function EegVisualization() {
 		};
 	});
 
-	context
-		.watch('sampling-on', (context, scope) => {
-			const { sampling } = context.state;
+	context.watch((context, scope) => {
+		if (context.state.sampling !== scope.sampling) {
+			scope.sampling = context.state.sampling;
+			context.emit(scope.sampling ? 'sampling-on' : 'sampling-off');
+		}
+	}, { sampling: null });
 
-			if (sampling !== scope.sampling) {
-				scope.sampling = sampling;
+	context.watch((context, scope) => {
+		if (context.state.interval !== scope.interval) {
+			scope.interval = context.state.interval;
+			context.emit('interval-change');
+		}
+	}, { interval: null });
 
-				return sampling;
-			}
-
-			return false;
-		}, { sampling: null })
-		.watch('sampling-off', (context, scope) => {
-			const { sampling } = context.state;
-
-			if (sampling !== scope.sampling) {
-				scope.sampling = sampling;
-
-				return !sampling;
-			}
-
-			return false;
-		}, { sampling: null }).watch('interval-change', (context, scope) => {
-			const { interval } = context.state;
-
-			if (interval !== scope.interval) {
-				scope.interval = interval;
-
-				return true;
-			}
-
-			return false;
-		}, { interval: null })
-		.watch('channel-change', (context, scope) => {
-			const { channel } = context.state;
-
-			if (channel !== scope.channel) {
-				scope.channel = channel;
-
-				return true;
-			}
-
-			return false;
-		}, { channel: [] });
+	context.watch((context, scope) => {
+		if (context.state.channel !== scope.channel) {
+			scope.channel = context.state.channel;
+			context.emit('channel-change');
+		}
+	}, { channel: [] });
 
 	assembly({
 		Title, TitleDevice, TitleDate,

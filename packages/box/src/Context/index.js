@@ -1,138 +1,115 @@
 import { install } from './preset';
 
-function ContextProxy(context) {
-	return {
-		get app() {
-			return context.app;
-		},
-		get debug() {
-			return context.debug;
-		},
-		get mounted() {
-			return context.mounted;
-		},
-		get state () {
-			return context.state;
-		}
-	};
-}
-
 export class Context {
 	constructor(app) {
-		const watching = {};
-		const everytime = {};
-		const proxy = ContextProxy(this);
-
 		this.app = app;
 		this.debug = true;
 		this.mounted = true;
 		this.state = {};
-		this.watching = watching;
-		this.everytime = everytime;
-		this.timerId = 0;
 
-		// Object.preventExtensions(this);
+		this.watching = Object.preventExtensions({
+			id: 0,
+			tasks: {},
+			events: {},
+			timer: Object.freeze({
+				intervals: {},
+				timeouts: {}
+			})
+		});
 
 		this.app.ticker.add(() => {
 			const now = Date.now();
 
-			for (const event in watching) {
-				const { checker, listeners, scope } = watching[event];
+			for (const taskId in this.watching.tasks) {
+				const { expression, scope } = this.watching.tasks[taskId];
 
-				checker(proxy, scope, now) && listeners.forEach(listener => listener());
-			}
-
-			for (const fn in everytime) {
-				everytime[fn]();
+				expression(this, scope, now);
 			}
 		});
 
 		install(this);
 	}
 
-	watch(event, checker, initScope = {}) {
-		this.watching[event] = {
-			checker,
-			listeners: [],
+	watch(expression, initScope = {}) {
+		const id = `w-${this.watching.id++}`;
+
+		this.watching.tasks[id] = {
+			expression,
 			scope: Object.assign({}, initScope)
 		};
 
-		return this;
+		return id;
 	}
 
-	unwatch(event) {
-		delete this.watching[event];
-
-		return this;
+	unwatch(id) {
+		delete this.watching.tasks[id];
 	}
 
 	on(event, listener) {
-		this.watching[event].listeners.push(listener);
+		if (!Array.isArray(this.watching.events[event])) {
+			this.watching.events[event] = [];
+		}
+
+		this.watching.events[event].push(listener);
 
 		return this;
 	}
 
 	off(event, listener) {
-		const { listeners } = this.watching[event];
+		if (listener === undefined) {
+			delete this.watching.events[event];
+		} else {
+			const { listeners } = this.watching.events[event];
 
-		if (listeners) {
-			const index = listeners.indexOf(listener);
+			if (listeners) {
+				const index = listeners.indexOf(listener);
 
-			index !== -1 && listeners.splice(index, 1);
+				index !== -1 && listeners.splice(index, 1);
+			}
 		}
 
 		return this;
 	}
 
-	setFrame(callback) {
-		const id = `f${this.timerId++}`;
+	emit(event) {
+		const listenerList = this.watching.events[event];
 
-		this.everytime[id] = callback;
+		if (Array.isArray(listenerList)) {
+			listenerList.forEach(listener => listener(this));
+		}
 
-		return id;
-	}
-
-	clearFrame(id) {
-		delete this.everytime[id];
+		return this;
 	}
 
 	setInterval(callback, ms) {
-		const id = `i${this.timerId++}`;
+		const id = `i-${this.watching.id++}`;
 
-		this.watch(id, (_context, scope, now) => {
-			if (now > scope.last + ms) {
-				scope.last = now;
-
-				return true;
-			}
-
-			return false;
-		}, {
-			last: Date.now()
-		}).on(id, () => callback());
+		this.watching.timer.intervals[id] = {
+			fn: callback,
+			ms,
+			calledAt: Date.now()
+		};
 
 		return id;
 	}
 
 	clearInterval(id) {
-		this.unwatch(id);
+		delete this.watching.timer.intervals[id];
 	}
 
-
 	setTimeout(callback, ms) {
-		const id = `t${this.timerId++}`;
-		const from = Date.now();
+		const id = `t-${this.watching.id++}`;
 
-		this
-			.watch(id, (_, now) => now > from + ms)
-			.on(id, () => {
-				this.unwatch(id);
-				callback();
-			});
+		this.watching.timer.timeouts[id] = {
+			fn: callback,
+			ms,
+			createdAt: Date.now()
+		};
 
 		return id;
 	}
+
 	clearTimeout(id) {
-		this.unwatch(id);
+		delete this.watching.timer.timeouts[id];
 	}
 }

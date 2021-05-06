@@ -30,8 +30,8 @@ export class Viewport {
 		app.stage.addChild(oFPS);
 
 		this.observer = this.context
-			.on('debug-open', () => oFPS.visible = true)
-			.on('debug-close', () => oFPS.visible = false)
+			.on('debug-on', () => oFPS.visible = true)
+			.on('debug-off', () => oFPS.visible = false)
 			.on('resize', () => app.resize())
 			.setInterval(() => oFPS.text = `${Math.round(app.ticker.FPS)}`, 1000);
 

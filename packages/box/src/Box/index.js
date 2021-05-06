@@ -34,9 +34,8 @@ export class Box {
 		};
 
 		context
-			.on('debug-close', () => outline.visible = false)
-			.on('debug-open', () => outline.visible = true)
-			.on('mounted', () => render())
+			.on('debug-off', () => outline.visible = false)
+			.on('debug-on', () => outline.visible = true)
 			.on('resize', () => render());
 
 		this.created();
