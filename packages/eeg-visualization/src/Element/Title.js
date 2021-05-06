@@ -34,7 +34,7 @@ export class TitleDate extends Box {
 			.setInterval(() => {
 				oDate.text = new Date().toISOString();
 				oDate.x = this.width - oDate.width;
-			}, 500);
+			}, 100);
 	}
 }
 

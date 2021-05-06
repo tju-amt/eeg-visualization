@@ -4,7 +4,7 @@ const CHANNEL_VALUE_WIDTH = 60;
 const NAVIGATOR_HEIGHT = 45;
 const GUTTER = 5;
 const CHART_PAADDING_BOTTOM = 20;
-const SCROLLER_WIDTH = 20;
+const SCROLLER_WIDTH = 16;
 
 export default [
 	{
@@ -47,7 +47,7 @@ export default [
 		},
 		children: [
 			{
-				className: 'ChannelLabel',
+				className: 'Label',
 				style: {
 					left: 0,
 					top: 0,
@@ -65,7 +65,7 @@ export default [
 				},
 				children: [
 					{
-						className: 'Legend',
+						className: 'Scale',
 						style: {
 							height: 120,
 							width: 40,
@@ -76,7 +76,7 @@ export default [
 				]
 			},
 			{
-				className: 'LastValue',
+				className: 'Value',
 				style: {
 					right: SCROLLER_WIDTH + GUTTER,
 					top: 0,
