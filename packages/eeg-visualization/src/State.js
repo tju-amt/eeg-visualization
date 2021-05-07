@@ -1,3 +1,5 @@
+import { SIZE } from './constant';
+
 const CHANNEL_LIST = [
 	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ'
 ].map(channel => {
@@ -8,8 +10,9 @@ const CHANNEL_LIST = [
 });
 
 export default {
+	SIZE,
 	sampling: true,
-	interval: 2000,
+	interval: 10000,
 	channel: {
 		top: [],
 		bottom: [],

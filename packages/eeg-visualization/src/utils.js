@@ -1,8 +1,9 @@
 
 const CHANNEL = {
 	FONT_SIZE: { MAX: 20, MIN: 8 },
+	FONT_RATIO: 0.6,
 	GROUP_INTERVAL: 10,
-	SPACE_NUMBER: 1
+	SPACE_NUMBER: 1,
 };
 
 export function computeChannelConfig(height, list, top, bottom) {
@@ -14,7 +15,7 @@ export function computeChannelConfig(height, list, top, bottom) {
 
 	list.forEach(channel => {
 		state.maxName = Math.max(channel.name.length, state.maxName);
-		state.maxReference = Math.max(channel.reference.length + 1, state.maxReference);
+		state.maxReference = Math.max(channel.reference.join(',').length, state.maxReference);
 	});
 
 	const allChannelHeight = height -
@@ -26,10 +27,13 @@ export function computeChannelConfig(height, list, top, bottom) {
 		CHANNEL.FONT_SIZE.MIN
 	);
 
-	console.log(height, fontSize, list.length);
-
 	return {
 		fontSize,
-		width: (state.maxName + state.maxReference + CHANNEL.SPACE_NUMBER) * fontSize,
+		maxNameLength: state.maxName,
+		labelWidth: Math.ceil(
+			(state.maxName + state.maxReference + CHANNEL.SPACE_NUMBER) *
+			fontSize * CHANNEL.FONT_RATIO
+		),
+		valueWidth: Math.ceil(fontSize * 6  * CHANNEL.FONT_RATIO)
 	};
 }

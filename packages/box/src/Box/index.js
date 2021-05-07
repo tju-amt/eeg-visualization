@@ -7,7 +7,6 @@ export class Box {
 	constructor(context) {
 		const container = new Container();
 		const hitArea = new Rectangle();
-		const box = this;
 
 		container.hitArea = hitArea;
 
@@ -17,26 +16,16 @@ export class Box {
 
 		this.children = [];
 		this.parent = null;
+		this.events = {};
 		this.context = context;
 
-		const mask = Mask(this);
-		const outline = Outline(this);
-
-		const render = () => {
-			const { height, width, top, left } = box;
-
-			hitArea.height = height;
-			hitArea.width = width;
-			container.x = left;
-			container.y = top;
-			mask.update();
-			outline.render();
-		};
+		this.mask = Mask(this);
+		this.outline = Outline(this);
 
 		context
-			.on('debug-off', () => outline.visible = false)
-			.on('debug-on', () => outline.visible = true)
-			.on('resize', () => render());
+			.on('debug-off', () => this.outline.visible = false)
+			.on('debug-on', () => this.outline.visible = true)
+			.on('resize', () => this.render());
 
 		this.created();
 	}
@@ -76,12 +65,50 @@ export class Box {
 		this.container.addChild(box.container);
 	}
 
+	render() {
+		const { height, width, top, left } = this;
+
+		this.hitArea.height = height;
+		this.hitArea.width = width;
+		this.container.x = left;
+		this.container.y = top;
+		this.mask.update();
+		this.outline.render();
+		this.emit('render');
+	}
+
+	on(event, callback) {
+		if (!this.events[event]) {
+			this.events[event] = [];
+		}
+
+		this.events[event].push(callback);
+
+		return this;
+	}
+
+	emit(event) {
+		const listenerList = this.events[event];
+
+		if (Array.isArray(listenerList)) {
+			listenerList.forEach(callback => callback(this));
+		}
+	}
+
+	// off(event, callback) {
+
+	// }
+
 	setStyle(styleObject) {
 		STYLE_ATTRIBUTE_NAME_LIST.forEach(name => {
 			if (styleObject[name] !== undefined) {
 				this.style[name] = styleObject[name];
 			}
 		});
+
+		if (this.parent !== null && this.context.mounted) {
+			this.render();
+		}
 
 		return this;
 	}

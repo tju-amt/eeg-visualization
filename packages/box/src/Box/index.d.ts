@@ -19,6 +19,9 @@ export class Box {
 	readonly height: number;
 	readonly width: number;
 
+	on(event: string, callback: Function): this;
+	emit(event: string): void;
+
 	appendChild(box: Box): void;
 	render(): void;
 	setStyle(styleObject): this;

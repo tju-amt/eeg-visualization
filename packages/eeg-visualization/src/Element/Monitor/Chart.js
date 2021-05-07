@@ -5,7 +5,7 @@ import { getFullTimeString } from './utils';
 const INIT_TIME = '00:00:00.000';
 
 const ENDPOINT_TEXT_STYLE = new TextStyle({
-	fontSize: 14,
+	fontSize: 12,
 	fontFamily: 'Consolas',
 	fontWeight: 'bold',
 	fill: 0x999999
@@ -49,6 +49,16 @@ export class Chart extends Box {
 			oEnd.y = height + 4;
 		};
 
+		const drawScanner = () => {
+			oScanner
+				.clear().lineStyle(1, 0x000000, 1, 0)
+				.moveTo(0, 0).lineTo(0, this.height)
+				.x = 0;
+
+			oCurrent.y = this.height + 4;
+			oCurrent.x = -oCurrent.width / 2;
+		};
+
 		this.context
 			.on('interval-change', () => setTimeline(Date.now()))
 			.on('sampling-on', () => {
@@ -68,15 +78,17 @@ export class Chart extends Box {
 				oScanner.visible = false;
 				this.context.clearFrame(state.scannerTimer);
 			})
-			.on('resize', () => {
-				drawBorder();
-				oScanner
-					.clear().lineStyle(1, 0x000000, 1, 0)
-					.moveTo(0, 0).lineTo(0, this.height)
-					.x = 0;
+			.on('channel-config-change', () => {
+				const { SIZE } = this.context.state;
+				const { labelWidth, valueWidth } = this.context.state.channel.config;
 
-				oCurrent.y = this.height + 4;
-				oCurrent.x = -oCurrent.width / 2;
+				this.setStyle({
+					left: labelWidth + SIZE.GUTTER,
+					right: valueWidth + SIZE.SCROLLER_WIDTH + SIZE.GUTTER * 2
+				});
+
+				drawBorder();
+				drawScanner();
 			});
 	}
 }

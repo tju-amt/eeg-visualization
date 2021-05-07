@@ -32,11 +32,20 @@ export default function EegVisualization() {
 	}, { interval: null });
 
 	context.watch((context, scope) => {
-		if (context.state.channel !== scope.channel) {
-			scope.channel = context.state.channel;
+		const { list, top, bottom } = context.state.channel;
+
+		if (
+			list !== scope.list ||
+			top !== scope.top ||
+			bottom !== scope.bottom
+		) {
+			scope.list = list;
+			scope.top = top;
+			scope.bottom = bottom;
 			context.emit('channel-change');
+			updateLabelConfig();
 		}
-	}, { channel: [] });
+	}, { list: [], top: [], bottom: [] });
 
 	function updateLabelConfig() {
 		const { channel } = context.state;
@@ -47,11 +56,11 @@ export default function EegVisualization() {
 			channel.top,
 			channel.bottom
 		);
+
+		context.emit('channel-config-change');
 	}
 
-	context
-		.on('channel-change', updateLabelConfig)
-		.on('resize', updateLabelConfig);
+	context.on('resize', updateLabelConfig);
 
 	const boxMap = assembly({
 		Title, TitleDevice, TitleDate,

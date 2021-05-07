@@ -1,18 +1,17 @@
 import { Box } from 'pixijs-box';
 import { Text, TextStyle } from 'pixi.js';
 
-const FONT_SIZE = 8;
 const GUTTER = 0;
 
-const FONT_STYLE = new TextStyle({
+const FONT_STYLE = window.f = new TextStyle({
 	fontWeight: 'bold',
-	fontSize: FONT_SIZE,
+	fontSize: 8,
 	fontFamily: 'Consolas',
 	fill: 0x0000ff
 });
 
 function computeGlobalOffset(containerHeight, length) {
-	Math.floor((containerHeight - (length * FONT_SIZE + (length - 1) * GUTTER)) / 2);
+	Math.floor((containerHeight - (length * FONT_STYLE.fontSize + (length - 1) * GUTTER)) / 2);
 	return 0;
 }
 
@@ -21,8 +20,8 @@ export class Label extends Box {
 		const oLabelList= [];
 		const { container, context } = this;
 
-		context.on('resize', () => {
-			const { list: channelList } = context.state.channel;
+		function render() {
+			const { list: channelList, config } = context.state.channel;
 			const globalY = computeGlobalOffset(container.height, channelList.length);
 
 			oLabelList.forEach(oLabel => {
@@ -37,14 +36,19 @@ export class Label extends Box {
 				const oReference = new Text(channel.reference.join(','), FONT_STYLE);
 
 				oLabel.addChild(oReference);
-				oLabel.x = 10;
-				oLabel.y = globalY + index * (FONT_SIZE + GUTTER);
-				oReference.x = 40;
+				oLabel.y = globalY + index * (FONT_STYLE.fontSize + GUTTER);
+				oReference.x = Math.floor(FONT_STYLE.fontSize * (config.maxNameLength + 1) * 0.6);
 
 				container.addChild(oLabel);
 				oLabelList.push(oLabel);
 			});
-		});
+		}
+
+		context
+			.on('resize', render)
+			.on('channel-config-change', () => {
+				this.setStyle({ width: context.state.channel.config.labelWidth });
+			});
 	}
 }
 
@@ -56,7 +60,7 @@ export class Value extends Box {
 		const state = { timer: null };
 
 		function drawValueList() {
-			const { list: channelList } = context.state.channel;
+			const { list: channelList, config } = context.state.channel;
 			const globalY = computeGlobalOffset(container.height, channelList.length);
 
 			context.clearInterval(state.timer);
@@ -73,25 +77,37 @@ export class Value extends Box {
 
 				oValueList.push(oValue);
 				container.addChild(oValue);
-				oValue.x = 10;
-				oValue.y = globalY + index * (FONT_SIZE + GUTTER);
+				oValue.x = config.valueWidth - oValue.width;
+				oValue.y = globalY + index * (FONT_STYLE.fontSize + GUTTER);
 			});
 
 			startUpdating();
 		}
 
 		function updateValueList() {
-			valueList.forEach((value, index) => oValueList[index].text = `${value}`);
+			const { valueWidth } = context.state.channel.config;
+
+			oValueList.forEach((oValue, index) => {
+				oValue.text = `${valueList[index]}`;
+				oValue.x = valueWidth - oValue.width;
+			});
 		}
 
 		function startUpdating() {
 			state.timer = context.setInterval(() => {
-				valueList.forEach((_, index) => valueList[index] = Math.random().toFixed(2));
+				valueList.forEach((_, index) => valueList[index] = Math.random().toFixed(3));
 				updateValueList();
 			}, 1000);
 		}
 
-		context.on('resize', drawValueList);
+		context
+			.on('resize', drawValueList)
+			.on('channel-config-change', () => {
+				const { valueWidth, fontSize } = context.state.channel.config;
+
+				this.setStyle({ width: valueWidth });
+				FONT_STYLE.fontSize = fontSize;
+			});
 	}
 }
 
