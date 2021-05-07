@@ -77,6 +77,16 @@ export default [
 							right: GUTTER,
 							bottom: GUTTER
 						}
+					},
+					{
+						className: 'Timeline',
+						style: {
+							left: 0,
+							right: 0,
+							// bottom: -CHART_PAADDING_BOTTOM,
+							bottom: 0,
+							height: CHART_PAADDING_BOTTOM
+						}
 					}
 				]
 			},

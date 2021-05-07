@@ -1,8 +1,11 @@
 import { Box } from 'pixijs-box';
 import { Graphics, Text, TextStyle } from 'pixi.js';
-import { getFullTimeString } from './utils';
+import { getFullTimeString,
+	getTimelinePostion
+} from './utils';
 
 const INIT_TIME = '00:00:00.000';
+const ACCURACY = 100;
 
 const ENDPOINT_TEXT_STYLE = new TextStyle({
 	fontSize: 12,
@@ -10,6 +13,20 @@ const ENDPOINT_TEXT_STYLE = new TextStyle({
 	fontWeight: 'bold',
 	fill: 0x999999
 });
+
+export class Timeline extends Box {
+	created() {
+		const { container, context } = this;
+
+		context.on('channel-config-change', () => {
+			const marks = getTimelinePostion(container.width, 80, Date.now(), Date.now() + 10000);
+			console.log(marks);
+
+			console.log(container.width, 80, Date.now(), Date.now() + 10000);
+		});
+	}
+}
+
 export class Chart extends Box {
 	created() {
 		const oScanner = new Graphics();
@@ -29,7 +46,7 @@ export class Chart extends Box {
 		};
 
 		const setTimeline = (now = 0) => {
-			state.start = Math.floor(now / 1000) * 1000;
+			state.start = Math.floor(now / ACCURACY) * ACCURACY;
 			state.end = state.start + this.context.state.interval;
 			oStart.text = getFullTimeString(new Date(state.start));
 			oEnd.text = getFullTimeString(new Date(state.end));

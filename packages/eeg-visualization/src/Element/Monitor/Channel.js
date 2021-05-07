@@ -3,11 +3,17 @@ import { Text, TextStyle } from 'pixi.js';
 
 const GUTTER = 0;
 
-const FONT_STYLE = window.f = new TextStyle({
+const FONT_STYLE = new TextStyle({
 	fontWeight: 'bold',
 	fontSize: 8,
 	fontFamily: 'Consolas',
 	fill: 0x0000ff
+});
+
+const REFERENCE_STYLE = new TextStyle({
+	fontSize: 8,
+	fontFamily: 'Consolas',
+	fill: 0x3366FF
 });
 
 function computeGlobalOffset(containerHeight, length) {
@@ -33,7 +39,7 @@ export class Label extends Box {
 
 			channelList.forEach((channel, index) => {
 				const oLabel = new Text(channel.name, FONT_STYLE);
-				const oReference = new Text(channel.reference.join(','), FONT_STYLE);
+				const oReference = new Text(channel.reference.join(','), REFERENCE_STYLE);
 
 				oLabel.addChild(oReference);
 				oLabel.y = globalY + index * (FONT_STYLE.fontSize + GUTTER);
@@ -107,6 +113,7 @@ export class Value extends Box {
 
 				this.setStyle({ width: valueWidth });
 				FONT_STYLE.fontSize = fontSize;
+				REFERENCE_STYLE.fontSize = fontSize;
 			});
 	}
 }
