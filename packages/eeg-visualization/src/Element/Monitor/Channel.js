@@ -22,7 +22,7 @@ export class Label extends Box {
 		const { container, context } = this;
 
 		context.on('resize', () => {
-			const { channel: channelList } = context.state;
+			const { list: channelList } = context.state.channel;
 			const globalY = computeGlobalOffset(container.height, channelList.length);
 
 			oLabelList.forEach(oLabel => {
@@ -56,7 +56,7 @@ export class Value extends Box {
 		const state = { timer: null };
 
 		function drawValueList() {
-			const { channel: channelList } = context.state;
+			const { list: channelList } = context.state.channel;
 			const globalY = computeGlobalOffset(container.height, channelList.length);
 
 			context.clearInterval(state.timer);

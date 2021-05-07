@@ -48,6 +48,7 @@ export default [
 		children: [
 			{
 				className: 'Label',
+				as: 'label',
 				style: {
 					left: 0,
 					top: 0,

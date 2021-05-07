@@ -4,26 +4,18 @@ import { Title, TitleDate, TitleDevice } from './src/Element/Title';
 import { Monitor, Label, Value, Chart, Scroller, Scale } from './src/Element/Monitor';
 import { Navigator } from './src/Element/Navigator';
 
+import baseState from './src/State';
+import { computeChannelConfig } from './src/utils';
+
 import layout from './src/layout';
 
 export default function EegVisualization() {
 	const viewport = new Viewport();
-
 	const { context } = viewport;
-	const { state } = context;
 
 	window.c = viewport.context;
 
-	state.sampling = true;
-	state.interval = 2000;
-	state.channel = [
-		'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ'
-	].map(channel => {
-		return {
-			name: channel,
-			reference: ['M1', 'M2']
-		};
-	});
+	Object.assign(context.state, baseState);
 
 	context.watch((context, scope) => {
 		if (context.state.sampling !== scope.sampling) {
@@ -46,7 +38,22 @@ export default function EegVisualization() {
 		}
 	}, { channel: [] });
 
-	assembly({
+	function updateLabelConfig() {
+		const { channel } = context.state;
+
+		channel.config = computeChannelConfig(
+			boxMap.label.height,
+			channel.list,
+			channel.top,
+			channel.bottom
+		);
+	}
+
+	context
+		.on('channel-change', updateLabelConfig)
+		.on('resize', updateLabelConfig);
+
+	const boxMap = assembly({
 		Title, TitleDevice, TitleDate,
 		Monitor, Label, Value, Chart, Scroller, Scale,
 		Navigator

@@ -5,9 +5,11 @@
  * @param {import('./Viewport').Viewport} viewport
  */
 export function assembly(ElementClassMap, layout, viewport) {
+	const map = {};
+
 	(function build(ElementList, parent) {
 		ElementList.forEach(element => {
-			const { className, style, children } = element;
+			const { className, style, children, as } = element;
 			const ElementClass = ElementClassMap[className];
 
 			if (ElementClass === undefined) {
@@ -19,9 +21,15 @@ export function assembly(ElementClassMap, layout, viewport) {
 			box.setStyle(style);
 			parent.appendChild(box);
 
+			if (as) {
+				map[as] = box;
+			}
+
 			if (Array.isArray(children)) {
 				build(children, box);
 			}
 		});
 	}(layout, viewport));
+
+	return map;
 }
