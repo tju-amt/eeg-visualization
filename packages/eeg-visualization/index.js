@@ -6,7 +6,7 @@ import * as Navigator from './src/Element/Navigator';
 
 const ALL_ELEMENT_CLASS = Object.assign({}, Title, Monitor, Navigator);
 
-import baseState from './src/State';
+import BaseState from './src/State';
 import { computeChannelConfig } from './src/utils';
 
 import layout from './src/layout';
@@ -17,7 +17,7 @@ export default function EegVisualization() {
 
 	window.c = viewport.context;
 
-	Object.assign(context.state, baseState);
+	Object.assign(context.state, BaseState());
 
 	function updateLabelConfig() {
 		const { channel } = context.state;
@@ -75,11 +75,20 @@ export default function EegVisualization() {
 			}
 		}, { start: null, end: null });
 
-		context.on('resize', updateLabelConfig);
+		context.watch((context, scope) => {
+			const { scroller } = context.state.chart;
+
+			if (scroller.length !== scope.length || scroller.start !== scope.start) {
+				scope.length = scroller.length;
+				scope.start = scroller.start;
+				context.emit('scroller-change');
+			}
+		});
 
 		let samplingWatcherId = null;
 
 		context
+			.on('resize', updateLabelConfig)
 			.on('sampling-off', () => context.unwatch(samplingWatcherId))
 			.on('sampling-on', () => {
 				const { state } = context;
@@ -101,6 +110,13 @@ export default function EegVisualization() {
 	return {
 		install(element) {
 			viewport.mount(element);
+
+			viewport.app.view.addEventListener('wheel', (event) => {
+				const { scroller } = context.state.chart;
+				event.stopPropagation();
+				event.preventDefault();
+				scroller.start += event.deltaY > 0 ? scroller.step : -scroller.step;
+			});
 		},
 		push() {
 
