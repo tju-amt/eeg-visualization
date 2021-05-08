@@ -6,7 +6,7 @@ export class Viewport {
 		const app = new PIXI.Application({
 			backgroundColor: 0xfcfcfc,
 			backgroundAlpha: 1,
-			antialias: true,
+			antialias: false,
 			autoDensity: true
 		});
 

@@ -74,6 +74,7 @@ export class Box {
 		this.container.y = top;
 		this.mask.update();
 		this.outline.render();
+		this.children.forEach(child => child.render());
 		this.emit('render');
 	}
 

@@ -46,7 +46,7 @@ export function getTimelinePostion(width, tagLength, start, end) {
 		return mark;
 	}
 
-	const tagHolderWidth = tagLength * 1.4;
+	const tagHolderWidth = tagLength * 1.2;
 	const primaryNumber = Math.ceil(width / tagHolderWidth);
 	const duration = end - start;
 	const primaryStep = getStep(duration / primaryNumber);

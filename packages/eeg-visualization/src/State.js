@@ -2,12 +2,12 @@ import { SIZE } from './constant';
 
 const CHANNEL_LIST = [
 	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	// 'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	// 'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	// 'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	// 'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	// 'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	// 'FP1', 'FPZ', 'FP2'
+	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
+	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
+	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
+	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
+	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
+	'FP1', 'FPZ', 'FP2'
 ].map(channel => {
 	return {
 		name: channel,
@@ -17,8 +17,17 @@ const CHANNEL_LIST = [
 
 export default {
 	SIZE,
-	sampling: true,
-	interval: 10000,
+	sampling: {
+		running: true,
+		interval: 10000
+	},
+	chart: {
+		scale: {},
+		timeline: {
+			start: Date.now(),
+			end: Date.now() + 10000
+		}
+	},
 	channel: {
 		top: [],
 		bottom: [],

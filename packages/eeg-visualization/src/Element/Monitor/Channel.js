@@ -42,8 +42,8 @@ export class Label extends Box {
 				const oReference = new Text(channel.reference.join(','), REFERENCE_STYLE);
 
 				oLabel.addChild(oReference);
-				oLabel.y = globalY + index * (FONT_STYLE.fontSize + GUTTER);
-				oReference.x = Math.floor(FONT_STYLE.fontSize * (config.maxNameLength + 1) * 0.6);
+				oLabel.y = globalY + index * (config.fontSize + GUTTER);
+				oReference.x = Math.floor(config.fontSize * (config.maxNameLength + 1) * 0.6);
 
 				container.addChild(oLabel);
 				oLabelList.push(oLabel);
@@ -51,9 +51,9 @@ export class Label extends Box {
 		}
 
 		context
-			.on('resize', render)
 			.on('channel-config-change', () => {
 				this.setStyle({ width: context.state.channel.config.labelWidth });
+				render();
 			});
 	}
 }
@@ -107,13 +107,13 @@ export class Value extends Box {
 		}
 
 		context
-			.on('resize', drawValueList)
 			.on('channel-config-change', () => {
 				const { valueWidth, fontSize } = context.state.channel.config;
 
 				this.setStyle({ width: valueWidth });
 				FONT_STYLE.fontSize = fontSize;
 				REFERENCE_STYLE.fontSize = fontSize;
+				drawValueList();
 			});
 	}
 }
