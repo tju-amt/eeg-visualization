@@ -5,6 +5,7 @@ import { getFullTimeString } from './utils';
 const INIT_TIME = '00:00:00.000';
 export class Chart extends Box {
 	created() {
+		const { CHART_PADDING_BOTTOM } = this.context.state.SIZE;
 		const oScanner = new Graphics();
 		const oCurrent = new Text(INIT_TIME, { fontSize: 12, fontFamily: 'Consolas' });
 		const oBorder = new Graphics();
@@ -21,16 +22,17 @@ export class Chart extends Box {
 
 			oBorder
 				.clear().lineStyle(1, 0x999999, 1, 0)
-				.drawRect(0, 0, width, height);
+				.drawRect(0, 0, width, height  - CHART_PADDING_BOTTOM);
 		};
 
 		const drawScanner = () => {
+
 			oScanner
 				.clear().lineStyle(1, 0x000000, 1, 0)
-				.moveTo(0, 0).lineTo(0, this.height)
+				.moveTo(0, 0).lineTo(0, this.height - CHART_PADDING_BOTTOM)
 				.x = 0;
 
-			oCurrent.y = this.height + 4;
+			oCurrent.y = this.height + 4 - CHART_PADDING_BOTTOM;
 			oCurrent.x = -oCurrent.width / 2;
 		};
 
@@ -41,14 +43,10 @@ export class Chart extends Box {
 					const { sampling, chart } = this.context.state;
 
 					oCurrent.text = `${getFullTimeString(new Date())}`;
-					oScanner.x = Math.round((now - chart.timeline.start) /
-						sampling.interval * this.width);
+					oScanner.x = (now - chart.timeline.start) / sampling.interval * this.width;
 				});
 			})
-			.on('sampling-off', () => {
-				oScanner.visible = false;
-				this.context.clearFrame(state.scannerTimer);
-			})
+			.on('sampling-off', () => oScanner.visible = false)
 			.on('channel-config-change', () => {
 				const { SIZE } = this.context.state;
 				const { labelWidth, valueWidth } = this.context.state.channel.config;

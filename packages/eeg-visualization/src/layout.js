@@ -6,7 +6,7 @@ const {
 	CHANNEL_VALUE_WIDTH,
 	NAVIGATOR_HEIGHT,
 	GUTTER,
-	CHART_PAADDING_BOTTOM,
+	CHART_PADDING_BOTTOM,
 	SCROLLER_WIDTH
 } = SIZE;
 
@@ -56,7 +56,7 @@ export default [
 				style: {
 					left: 0,
 					top: 0,
-					bottom: CHART_PAADDING_BOTTOM,
+					bottom: CHART_PADDING_BOTTOM,
 					width: CHANNEL_LABEL_WIDTH
 				}
 			},
@@ -66,7 +66,7 @@ export default [
 					left: CHANNEL_LABEL_WIDTH + GUTTER,
 					right: CHANNEL_VALUE_WIDTH + SCROLLER_WIDTH + 2 * GUTTER,
 					top: 0,
-					bottom: CHART_PAADDING_BOTTOM
+					bottom: 0
 				},
 				children: [
 					{
@@ -75,7 +75,7 @@ export default [
 							height: 120,
 							width: 40,
 							right: GUTTER,
-							bottom: GUTTER
+							bottom: GUTTER + CHART_PADDING_BOTTOM
 						}
 					},
 					{
@@ -83,9 +83,8 @@ export default [
 						style: {
 							left: 0,
 							right: 0,
-							bottom: -CHART_PAADDING_BOTTOM,
-							// bottom: 0,
-							height: CHART_PAADDING_BOTTOM
+							bottom: 0,
+							height: CHART_PADDING_BOTTOM
 						}
 					}
 				]
@@ -95,7 +94,7 @@ export default [
 				style: {
 					right: SCROLLER_WIDTH + GUTTER,
 					top: 0,
-					bottom: CHART_PAADDING_BOTTOM,
+					bottom: CHART_PADDING_BOTTOM,
 					width: CHANNEL_VALUE_WIDTH
 				}
 			},
@@ -105,7 +104,7 @@ export default [
 					right: 0,
 					width: SCROLLER_WIDTH,
 					top: 0,
-					bottom: CHART_PAADDING_BOTTOM
+					bottom: CHART_PADDING_BOTTOM
 				}
 			}
 		]

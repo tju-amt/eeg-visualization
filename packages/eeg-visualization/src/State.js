@@ -22,7 +22,10 @@ export default {
 		interval: 10000
 	},
 	chart: {
-		scale: {},
+		scale: {
+			pixel: 200,
+			microvolt: 5
+		},
 		timeline: {
 			start: Date.now(),
 			end: Date.now() + 10000

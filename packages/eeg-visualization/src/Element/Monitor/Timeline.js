@@ -24,7 +24,7 @@ export class Timeline extends Box {
 			const { width } = this;
 			const marks = getTimelinePostion(width, 80, start, end);
 
-			oPrimaryMark.clear().lineStyle(3, 0x666666, 1, 0);
+			oPrimaryMark.clear().lineStyle(2, 0x666666, 1, 0);
 			oSecondaryMark.clear().lineStyle(1, 0x999999, 1, 0);
 			oBorder.clear().lineStyle(1, 0x000000, 1, 0);
 

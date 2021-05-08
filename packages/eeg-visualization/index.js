@@ -83,14 +83,16 @@ export default function EegVisualization() {
 			.on('sampling-off', () => context.unwatch(samplingWatcherId))
 			.on('sampling-on', () => {
 				const { state } = context;
-				const { interval } = state.sampling;
 
 				context.watch((_c, scope, now) => {
-					if (now > scope.end) {
+					const { interval } = state.sampling;
+
+					if (now > scope.end || scope.interval !== interval) {
 						state.chart.timeline.start = now;
 						state.chart.timeline.end = scope.end = now + interval;
+						scope.interval = interval;
 					}
-				}, { end: 0 });
+				}, { end: 0, interval: null });
 			});
 	});
 
