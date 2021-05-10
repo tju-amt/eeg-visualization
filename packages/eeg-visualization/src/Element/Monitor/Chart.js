@@ -26,7 +26,6 @@ export class Chart extends Box {
 		};
 
 		const drawScanner = () => {
-
 			oScanner
 				.clear().lineStyle(1, 0x000000, 1, 0)
 				.moveTo(0, 0).lineTo(0, this.height - CHART_PADDING_BOTTOM)

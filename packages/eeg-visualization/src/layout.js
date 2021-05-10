@@ -72,8 +72,8 @@ export default [
 					{
 						className: 'Scale',
 						style: {
-							height: 120,
-							width: 40,
+							height: 240,
+							width: 80,
 							right: GUTTER,
 							bottom: GUTTER + CHART_PADDING_BOTTOM
 						}

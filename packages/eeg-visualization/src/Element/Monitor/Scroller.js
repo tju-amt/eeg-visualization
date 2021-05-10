@@ -34,14 +34,10 @@ export class Scroller extends Box {
 		oTrack.hitArea = hTrack;
 		oThumb.hitArea = hThumb;
 
-		console.log(oThumb);
-
 		oTrack.on('click', event => {
 			const bounds = oThumb.getBounds();
 			const { global } = event.data;
 			const step = context.state.chart.scroller.length;
-
-			console.log(global.y, bounds.y);
 
 			context.state.chart.scroller.start += global.y < bounds.y ? -step : step;
 		});

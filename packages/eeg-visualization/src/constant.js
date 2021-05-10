@@ -1,4 +1,4 @@
-export const SIZE = {
+export const SIZE = Object.freeze({
 	TITLE_HEIGHT: 30,
 	CHANNEL_LABEL_WIDTH: 120,
 	CHANNEL_VALUE_WIDTH: 60,
@@ -6,4 +6,4 @@ export const SIZE = {
 	GUTTER: 4,
 	CHART_PADDING_BOTTOM: 20,
 	SCROLLER_WIDTH: 16
-};
+});
