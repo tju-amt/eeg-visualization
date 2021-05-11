@@ -3,7 +3,7 @@ import { Box } from 'pixijs-box';
 
 const RULER_WIDTH = 5;
 const MARGIN = 10;
-const PADDING = 5;
+const PADDING = 10;
 
 const VOLT_UNIT_LIST = ['μV', 'mV', 'V'];
 
@@ -15,8 +15,19 @@ function voltString(microvolt) {
 		level++;
 	}
 
-	return `${microvolt.toFixed(1)} ${VOLT_UNIT_LIST[level]}`;
+	return `${microvolt.toFixed(1)}${VOLT_UNIT_LIST[level]}`;
 }
+
+const BASE_STYLE = new TextStyle({
+	fontSize: 12,
+	fontFamily: 'Consolas',
+	dropShadow: false,
+	dropShadowAlpha: 1,
+	dropShadowAngle: 0,
+	dropShadowBlur: 3,
+	dropShadowColor: '0x000000',
+	dropShadowDistance: 0
+});
 
 export class Scale extends Box {
 	created() {
@@ -29,20 +40,13 @@ export class Scale extends Box {
 		oRulerShadow.visible = false;
 		oRulerShadow.filters = [new filters.BlurFilter(2)];
 
-		const sVolt = new TextStyle({
-			fontSize: 12,
-			fontFamily: 'Consolas',
-			dropShadow: false,
-			dropShadowAlpha: 1,
-			dropShadowAngle: 0,
-			dropShadowBlur: 3,
-			dropShadowColor: '0x000000',
-			dropShadowDistance: 0
-		});
+		const sVolt = BASE_STYLE.clone();
+		const sPixel = BASE_STYLE.clone();
 
 		const oVolt = new Text('', sVolt);
+		const oPixel = new Text('', sPixel);
 
-		container.addChild(oVolt, oRuler);
+		container.addChild(oVolt, oRuler, oPixel);
 		oRuler.addChild(oRulerShadow);
 		oRuler.interactive = true;
 		oVolt.interactive = true;
@@ -50,9 +54,9 @@ export class Scale extends Box {
 
 		function drawRuler() {
 			const { width, height } = box;
-			const { pixel } = context.state.chart.scale;
+			const { pixel: pixelHeight } = context.state.chart.scale;
 			const x = width - RULER_WIDTH - PADDING;
-			const startY = height - PADDING - pixel;
+			const startY = height - PADDING - pixelHeight;
 			const endY = height - PADDING;
 
 			oRuler
@@ -71,9 +75,13 @@ export class Scale extends Box {
 				.lineTo(width - PADDING, endY)
 				.lineTo(x, endY);
 
+			oPixel.text = `${context.state.chart.scale.pixel}px`;
+			oPixel.x = -(oPixel.width - (width - MARGIN - RULER_WIDTH - PADDING));
+			oPixel.y = Math.floor(startY - oPixel.height / 2);
+
 			hRuler.x = x;
-			hRuler.y = PADDING;
-			hRuler.height = height;
+			hRuler.y = startY;
+			hRuler.height = pixelHeight;
 			hRuler.width = RULER_WIDTH;
 		}
 
@@ -81,7 +89,7 @@ export class Scale extends Box {
 			const { width, height } = box;
 
 			oVolt.text = voltString(context.state.chart.scale.microvolt);
-			oVolt.y = height - oVolt.height - PADDING;
+			oVolt.y = Math.floor(height - oVolt.height / 2 - PADDING);
 			oVolt.x = -(oVolt.width - (width - MARGIN - RULER_WIDTH - PADDING));
 		}
 
@@ -89,20 +97,24 @@ export class Scale extends Box {
 			.on('mouseover', () => {
 				context.state.hover = 'scale-ruler';
 				oRulerShadow.visible = true;
+				oRuler.cursor = 'pointer';
 			})
 			.on('mouseout', () => {
 				context.state.hover = 'global';
 				oRulerShadow.visible = false;
+				oRuler.cursor = 'default';
 			});
 
 		oVolt
 			.on('mouseover', () => {
 				context.state.hover = 'scale-volt';
 				sVolt.dropShadow = true;
+				oVolt.cursor = 'pointer';
 			})
 			.on('mouseout', () => {
 				context.state.hover = 'global';
 				sVolt.dropShadow = false;
+				oVolt.cursor = 'default';
 			});
 
 		context.on('resize', () => {
