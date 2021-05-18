@@ -60,7 +60,7 @@ export class Value extends Box {
 		}
 
 		context
-			.on('channel-config-change', () => {
+			.on('channel-display-change', () => {
 				const { valueWidth, fontSize } = context.state.channel.config;
 
 				this.setStyle({ width: valueWidth });

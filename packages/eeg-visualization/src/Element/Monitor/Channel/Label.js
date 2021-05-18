@@ -22,10 +22,7 @@ export class Label extends Box {
 			const { display: channelList, config } = context.state.channel;
 			const globalY = computeGlobalOffset(container.height, channelList.length);
 
-			oLabelList.forEach(oLabel => {
-				oLabel.destroy();
-				container.removeChild(oLabel);
-			});
+			oLabelList.forEach(oLabel => oLabel.destroy());
 
 			oLabelList.length = 0;
 
@@ -35,7 +32,7 @@ export class Label extends Box {
 
 				oLabel.addChild(oReference);
 				oLabel.y = globalY + index * (config.fontSize + SIZE.GUTTER);
-				oReference.x = Math.floor(config.fontSize * (config.maxNameLength + 1) * 0.6);
+				oReference.x = Math.trunc(config.fontSize * (config.maxNameLength + 1) * 0.6);
 
 				container.addChild(oLabel);
 				oLabelList.push(oLabel);

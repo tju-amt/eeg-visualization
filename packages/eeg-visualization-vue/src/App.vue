@@ -13,6 +13,7 @@
 
 <script>
 import EEG from '@tjuamt/eeg-visualization';
+import { CHANNEL_LIST } from './dev';
 
 export default {
 	name: 'App',
@@ -31,6 +32,7 @@ export default {
 		const eeg = window.eeg = this._egg = EEG();
 
 		eeg.install(this.$refs.eeg);
+		eeg.setChannelList(CHANNEL_LIST);
 	},
 	destroyed() {
 		this._egg.destroy();

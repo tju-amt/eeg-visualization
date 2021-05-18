@@ -91,6 +91,9 @@ export default function EegVisualization() {
 		},
 		destroy() {
 			viewport.destroy();
+		},
+		setChannelList(list) {
+			context.state.channel.list = list;
 		}
 	};
 }

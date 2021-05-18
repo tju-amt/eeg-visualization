@@ -15,7 +15,7 @@ function voltString(microvolt) {
 		level++;
 	}
 
-	return `${microvolt.toFixed(1)}${VOLT_UNIT_LIST[level]}`;
+	return `±${microvolt.toFixed(1)}${VOLT_UNIT_LIST[level]}`;
 }
 
 const BASE_STYLE = new TextStyle({
@@ -77,7 +77,7 @@ export class Scale extends Box {
 
 			oPixel.text = `${context.state.chart.scale.pixel}px`;
 			oPixel.x = -(oPixel.width - (width - MARGIN - RULER_WIDTH - PADDING));
-			oPixel.y = Math.floor(startY - oPixel.height / 2);
+			oPixel.y = Math.trunc(startY - oPixel.height / 2);
 
 			hRuler.x = x;
 			hRuler.y = startY;
@@ -89,7 +89,7 @@ export class Scale extends Box {
 			const { width, height } = box;
 
 			oVolt.text = voltString(context.state.chart.scale.microvolt);
-			oVolt.y = Math.floor(height - oVolt.height / 2 - PADDING);
+			oVolt.y = Math.trunc(height - oVolt.height / 2 - PADDING);
 			oVolt.x = -(oVolt.width - (width - MARGIN - RULER_WIDTH - PADDING));
 		}
 

@@ -11,7 +11,8 @@ const CHANNEL_LIST = [
 ].map(channel => {
 	return {
 		name: channel,
-		reference: ['M1', 'M2']
+		reference: ['M1', 'M2'],
+		data: []
 	};
 });
 
@@ -29,15 +30,18 @@ export default function ContextState(context) {
 	const now = Date.now();
 
 	const chart = {
-		scroller: { length: 12, start: 0 },
-		timeline: { start: now, end: now + 10000 },
-		scale: { pixel: 200, microvolt: 5 }
+		scroller: { length: 63, start: 0 },
+		timeline: { start: now, end: now + 40000 },
+		scale: { pixel: 100, microvolt: 1200 }
 	};
 
 	const channel = {
 		top: [],
 		bottom: [],
 		list: CHANNEL_LIST,
+		timeList: new Array(10000).fill(1).map((_, index) => now + 40 * index),
+		maxChannelNumberInView: 0,
+		fontSize: 12,
 		config: { fontSize: 12, labelWidth: 0, valueWidth: 0 }
 	};
 
@@ -48,8 +52,12 @@ export default function ContextState(context) {
 		context.emit('channel-display-change');
 	}
 
+	function updateChannelState() {
+		channel.maxChannelNumberInView = 30;
+		channel.fontSize = 12;
+	}
+
 	context.on('scroller-change', emitChannelDisplayChange);
-	context.on('channel-change', emitChannelDisplayChange);
 	context.on('channel-config-change', emitChannelDisplayChange);
 
 	return {
@@ -137,7 +145,7 @@ export default function ContextState(context) {
 					let current = Math.abs(microvolt);
 
 					while (current) {
-						current = Math.floor(current / 10);
+						current = Math.trunc(current / 10);
 						digit++;
 					}
 
@@ -145,7 +153,7 @@ export default function ContextState(context) {
 						? Math.pow(10, digit - 2)
 						: Math.pow(10, digit - 1);
 
-					this.microvolt = (Math.floor(microvolt / step) + (up ? 1 : -1)) * step;
+					this.microvolt = (Math.trunc(microvolt / step) + (up ? 1 : -1)) * step;
 				}
 			}),
 			timeline: Object.freeze({
@@ -176,6 +184,7 @@ export default function ContextState(context) {
 			set list(value) {
 				channel.list = value;
 				context.emit('channel-change');
+				updateChannelState();
 			},
 			get top() {
 				return channel.top;
@@ -183,6 +192,7 @@ export default function ContextState(context) {
 			set top(value) {
 				channel.top = value;
 				context.emit('channel-change');
+				updateChannelState();
 			},
 			get bottom() {
 				return channel.top;
@@ -190,11 +200,15 @@ export default function ContextState(context) {
 			set bottom(value) {
 				channel.bottom = value;
 				context.emit('channel-change');
+				updateChannelState();
 			},
 			get display() {
 				const { start, length } = chart.scroller;
 
 				return channel.list.slice(start, start + length);
+			},
+			get timeList() {
+				return channel.timeList.slice(0);
 			},
 			config: {
 				fontSize: 12,

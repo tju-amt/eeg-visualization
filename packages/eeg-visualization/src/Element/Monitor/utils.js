@@ -31,7 +31,7 @@ const POSITIONS = [2, 5, 10];
 function getStep(number) {
 	const digit = getDigit(number);
 	const level = Math.pow(10, digit);
-	const topDigit = Math.floor(number / level);
+	const topDigit = Math.trunc(number / level);
 	const pos = POSITIONS.find(pos => pos > topDigit);
 
 	return level * pos;
@@ -51,7 +51,7 @@ export function getTimelinePostion(width, tagLength, start, end) {
 	const duration = end - start;
 	const primaryStep = getStep(duration / primaryNumber);
 	const secondaryStep = primaryStep / 10;
-	const length = Math.floor(duration / secondaryStep);
+	const length = Math.trunc(duration / secondaryStep);
 	const realStart = Math.ceil(start / secondaryStep) * secondaryStep;
 
 	for (let index = 0; index < length; index++) {

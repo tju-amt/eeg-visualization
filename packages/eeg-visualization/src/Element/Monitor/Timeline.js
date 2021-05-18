@@ -10,6 +10,7 @@ const TAG_STYLE = new TextStyle({
 
 export class Timeline extends Box {
 	created() {
+		const box = this;
 		const { container, context } = this;
 		const oPrimaryMark = new Graphics();
 		const oSecondaryMark = new Graphics();
@@ -18,10 +19,10 @@ export class Timeline extends Box {
 
 		container.addChild(oSecondaryMark, oPrimaryMark, oBorder);
 
-		const drawTimeline = () => {
+		function drawTimeline() {
 			const { start, end } = context.state.chart.timeline;
 			const interval = end - start;
-			const { width } = this;
+			const { width } = box;
 			const marks = getTimelinePostion(width, 80, start, end);
 
 			oPrimaryMark.clear().lineStyle(2, 0x666666, 1, 0);
@@ -47,12 +48,12 @@ export class Timeline extends Box {
 					oPrimaryMark.addChild(oTag);
 					oPrimaryTagList.push(oTag);
 					oPrimaryMark.moveTo(pos, 0).lineTo(pos, -10);
-					oTag.x = Math.floor(pos - oTag.width / 2);
+					oTag.x = Math.trunc(pos - oTag.width / 2);
 					oTag.y = 4;
 				});
 
 			oBorder.moveTo(0, -1).lineTo(width, -1);
-		};
+		}
 
 		context
 			.on('timeline-change', drawTimeline)

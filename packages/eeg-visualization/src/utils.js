@@ -23,7 +23,7 @@ export function computeChannelConfig(height, list, top, bottom) {
 		(bottom.length === 0 ? 0 : CHANNEL.GROUP_INTERVAL);
 
 	const fontSize = Math.max(
-		Math.min(Math.floor(allChannelHeight / state.length), CHANNEL.FONT_SIZE.MAX),
+		Math.min(Math.trunc(allChannelHeight / state.length), CHANNEL.FONT_SIZE.MAX),
 		CHANNEL.FONT_SIZE.MIN
 	);
 
