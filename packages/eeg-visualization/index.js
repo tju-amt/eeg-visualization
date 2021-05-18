@@ -24,7 +24,7 @@ export default function EegVisualization() {
 
 		channel.config = computeChannelConfig(
 			boxMap.label.height,
-			channel.list,
+			channel.display,
 			channel.top,
 			channel.bottom
 		);

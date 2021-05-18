@@ -69,15 +69,18 @@ export class Scroller extends Box {
 		window.addEventListener('mouseup', local.endDragging);
 
 		oThumb
+			.on('mouseover', () => !local.isDragging && drawScrollbar(0x999999))
+			.on('mouseout', () => !local.isDragging && drawScrollbar())
 			.on('click', (event) => event.stopPropagation())
 			.on('mousedown', event => {
+				drawScrollbar(0x666666);
 				local.isDragging = true;
 				local.startY = event.data.global.y;
 				local.topY = oThumb.y;
 				window.addEventListener('mousemove', local.dragging);
 			});
 
-		function drawScrollbar() {
+		function drawScrollbar(color = 0xBBBBBB) {
 			const { width, height } = box;
 			const { channel, chart } = context.state;
 			const { scroller } = chart;
@@ -97,7 +100,7 @@ export class Scroller extends Box {
 
 			local.maxY = maxThumbHeight - thumbHeight;
 
-			oThumb.clear().beginFill(0xBBBBBB).lineStyle(0).drawRect(0, 0, thumbWidth, thumbHeight);
+			oThumb.clear().beginFill(color).lineStyle(0).drawRect(0, 0, thumbWidth, thumbHeight);
 			oThumb.x = thumbX;
 			oThumb.y = thumbY;
 			hThumb.width = thumbWidth;
@@ -105,7 +108,7 @@ export class Scroller extends Box {
 		}
 
 		context
-			.on('channel-config-change', drawScrollbar)
+			.on('channel-config-change', () => drawScrollbar())
 			.on('scroller-change', () => {
 				if (!local.isDragging) {
 					drawScrollbar();

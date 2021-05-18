@@ -38,12 +38,19 @@ export default function ContextState(context) {
 		top: [],
 		bottom: [],
 		list: CHANNEL_LIST,
-		display: [],
 		config: { fontSize: 12, labelWidth: 0, valueWidth: 0 }
 	};
 
 	const sampling = { running: false, interval: 2000 };
 	let hover = 'global';
+
+	function emitChannelDisplayChange() {
+		context.emit('channel-display-change');
+	}
+
+	context.on('scroller-change', emitChannelDisplayChange);
+	context.on('channel-change', emitChannelDisplayChange);
+	context.on('channel-config-change', emitChannelDisplayChange);
 
 	return {
 		SIZE,
@@ -185,7 +192,9 @@ export default function ContextState(context) {
 				context.emit('channel-change');
 			},
 			get display() {
-				return [];
+				const { start, length } = chart.scroller;
+
+				return channel.list.slice(start, start + length);
 			},
 			config: {
 				fontSize: 12,

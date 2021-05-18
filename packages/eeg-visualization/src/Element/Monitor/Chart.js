@@ -10,6 +10,7 @@ export class Chart extends Box {
 		const oCurrent = new Text(INIT_TIME, { fontSize: 12, fontFamily: 'Consolas' });
 		const oBorder = new Graphics();
 
+		oScanner.visible = false;
 		oScanner.addChild(oCurrent);
 		this.container.addChild(oBorder, oScanner);
 

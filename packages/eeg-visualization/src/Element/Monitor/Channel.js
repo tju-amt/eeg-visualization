@@ -27,7 +27,7 @@ export class Label extends Box {
 		const { container, context } = this;
 
 		function render() {
-			const { list: channelList, config } = context.state.channel;
+			const { display: channelList, config } = context.state.channel;
 			const globalY = computeGlobalOffset(container.height, channelList.length);
 
 			oLabelList.forEach(oLabel => {
@@ -51,7 +51,7 @@ export class Label extends Box {
 		}
 
 		context
-			.on('channel-config-change', () => {
+			.on('channel-display-change', () => {
 				this.setStyle({ width: context.state.channel.config.labelWidth });
 				render();
 			});
