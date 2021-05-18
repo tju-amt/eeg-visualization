@@ -21,6 +21,6 @@
     "url": "https://github.com/tju-amt/eeg-visualization/issues"
   },
   "dependencies": {
-    "pixi.js": "^6.0.2"
+    "pixi.js": "^6.0.4"
   }
 }
