@@ -18,25 +18,28 @@ export default function EegVisualization() {
 	Object.assign(context.state, BaseState(context));
 	assembly(ALL_ELEMENT_CLASS, layout, viewport);
 
-	context.on('mounted', function install() {
-		let samplingWatcherId = null;
+	context
+		.on('channel-layout-change', () => context.emit('channel-display-change'))
+		.on('scroller-change', () => context.emit('channel-display-change'))
+		.on('mounted', function install() {
+			let samplingWatcherId = null;
 
-		context
-			.on('sampling-off', () => context.unwatch(samplingWatcherId))
-			.on('sampling-on', () => {
-				const { state } = context;
+			context
+				.on('sampling-off', () => context.unwatch(samplingWatcherId))
+				.on('sampling-on', () => {
+					const { state } = context;
 
-				samplingWatcherId = context.watch((_c, scope, now) => {
-					const { interval } = state.sampling;
+					samplingWatcherId = context.watch((_c, scope, now) => {
+						const { interval } = state.sampling;
 
-					if (now > scope.end || scope.interval !== interval) {
-						state.chart.timeline.start = now;
-						state.chart.timeline.end = scope.end = now + interval;
-						scope.interval = interval;
-					}
-				}, { end: 0, interval: null });
-			});
-	});
+						if (now > scope.end || scope.interval !== interval) {
+							state.chart.timeline.start = now;
+							state.chart.timeline.end = scope.end = now + interval;
+							scope.interval = interval;
+						}
+					}, { end: 0, interval: null });
+				});
+		});
 
 	const ON_WHEEL = {
 		'global'(event) {

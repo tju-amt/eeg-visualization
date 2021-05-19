@@ -4,6 +4,22 @@ import { getFullTimeString } from './utils';
 
 const INIT_TIME = '00:00:00.000';
 export class Chart extends Box {
+	get maxCommonChannelNumberInView() {
+		return this.parent.maxCommonChannelNumberInView;
+	}
+
+	get channelHeight() {
+		return this.parent.channelHeight;
+	}
+
+	get labelWidth() {
+		return this.parent.labelWidth;
+	}
+
+	get valueWidth() {
+		return this.parent.valueWidth;
+	}
+
 	created() {
 		const { CHART_PADDING_BOTTOM } = this.context.state.SIZE;
 		const oScanner = new Graphics();
@@ -47,9 +63,9 @@ export class Chart extends Box {
 				});
 			})
 			.on('sampling-off', () => oScanner.visible = false)
-			.on('channel-config-change', () => {
+			.on('channel-layout-change', () => {
 				const { SIZE } = this.context.state;
-				const { labelWidth, valueWidth } = this.context.state.channel.config;
+				const { labelWidth, valueWidth } = this;
 
 				this.setStyle({
 					left: labelWidth + SIZE.GUTTER,

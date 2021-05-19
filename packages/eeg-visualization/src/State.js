@@ -14,7 +14,7 @@ export default function ContextState(context) {
 	const now = Date.now();
 
 	const chart = {
-		scroller: { length: 63, start: 0 },
+		scroller: { length: 20, start: 0 },
 		timeline: { start: now, end: now + 40000 },
 		scale: { pixel: 100, microvolt: 1200 }
 	};
@@ -23,7 +23,7 @@ export default function ContextState(context) {
 		top: [],
 		bottom: [],
 		common: [],
-		timeList: new Array(10000).fill(1).map((_, index) => now + 40 * index),
+		timeList: [],
 	};
 
 	const sampling = { running: false, span: 2000 };
@@ -156,11 +156,6 @@ export default function ContextState(context) {
 			get bottom() {
 				return channel.bottom;
 			},
-			// get display() {
-			// 	const { start, length } = chart.scroller;
-
-			// 	return channel.common.slice(start, start + length);
-			// },
 			get timeList() {
 				return channel.timeList.slice(0);
 			},

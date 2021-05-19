@@ -9,7 +9,34 @@ import {
 } from './utils';
 
 export class Label extends Box {
+	get channelHeight() {
+		return this.parent.channelHeight;
+	}
+
+	get labelWidth() {
+		return this.parent.labelWidth;
+	}
+
+	get maxNameLength() {
+		return this.parent.maxNameLength;
+	}
+
+	get commonChannelNumber() {
+		return Math.min(
+			this.parent.maxCommonChannelNumberInView,
+			this.context.state.chart.scroller.length
+		);
+	}
+
+	get commonChannelList() {
+		const length = this.commonChannelNumber;
+		const start = this.context.state.chart.scroller.start;
+
+		return this.context.state.channel.common.slice(start, start + length);
+	}
+
 	created() {
+		const box = this;
 		const oLabelList= [];
 		const { container, context } = this;
 
@@ -18,21 +45,26 @@ export class Label extends Box {
 			reference: LabelReferenceTextStyle()
 		};
 
-		function render() {
-			const { display: channelList, config } = context.state.channel;
-			const globalY = computeGlobalOffset(container.height, channelList.length);
-
+		function clear() {
 			oLabelList.forEach(oLabel => oLabel.destroy());
-
 			oLabelList.length = 0;
+		}
 
-			channelList.forEach((channel, index) => {
+		function render() {
+			clear();
+
+			const { commonChannelList, maxNameLength, channelHeight } = box;
+			const globalY = computeGlobalOffset(box.height, commonChannelList.length);
+
+			TextStyle.label.fontSize = TextStyle.reference.fontSize = channelHeight;
+
+			commonChannelList.forEach((channel, index) => {
 				const oLabel = new Text(channel.name, TextStyle.label);
 				const oReference = new Text(channel.reference.join(','), TextStyle.reference);
 
 				oLabel.addChild(oReference);
-				oLabel.y = globalY + index * (config.fontSize + SIZE.GUTTER);
-				oReference.x = Math.trunc(config.fontSize * (config.maxNameLength + 1) * 0.6);
+				oLabel.y = globalY + index * (channelHeight + SIZE.GUTTER);
+				oReference.x = Math.trunc(channelHeight * (maxNameLength + 1) * 0.6);
 
 				container.addChild(oLabel);
 				oLabelList.push(oLabel);
@@ -41,10 +73,7 @@ export class Label extends Box {
 
 		context
 			.on('channel-display-change', () => {
-				const { fontSize } = context.state.channel.config;
-
-				this.setStyle({ width: context.state.channel.config.labelWidth });
-				TextStyle.label.fontSize = TextStyle.reference.fontSize = fontSize;
+				this.setStyle({ width: this.labelWidth });
 				render();
 			});
 	}

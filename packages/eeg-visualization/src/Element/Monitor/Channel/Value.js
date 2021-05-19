@@ -8,7 +8,30 @@ import {
 } from './utils';
 
 export class Value extends Box {
+	get channelHeight() {
+		return this.parent.channelHeight;
+	}
+
+	get valueWidth() {
+		return this.parent.valueWidth;
+	}
+
+	get commonChannelNumber() {
+		return Math.min(
+			this.parent.maxCommonChannelNumberInView,
+			this.context.state.chart.scroller.length
+		);
+	}
+
+	get commonChannelList() {
+		const length = this.commonChannelNumber;
+		const start = this.context.state.chart.scroller.start;
+
+		return this.context.state.channel.common.slice(start, start + length);
+	}
+
 	created() {
+		const box = this;
 		const oValueList = [];
 		const valueList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 		const { container, context } = this;
@@ -18,33 +41,32 @@ export class Value extends Box {
 			value: ValueTextStyle()
 		};
 
+		function clear() {
+			oValueList.forEach(oValue => oValue.destroy());
+			oValueList.length = 0;
+		}
+
 		function drawValueList() {
-			const { list: channelList, config } = context.state.channel;
-			const globalY = computeGlobalOffset(container.height, channelList.length);
+			const { commonChannelList, valueWidth, channelHeight } = box;
+			const globalY = computeGlobalOffset(box.height, commonChannelList.length);
 
 			context.clearInterval(state.timer);
-
-			oValueList.forEach(oValue => {
-				oValue.destroy();
-				container.removeChild(oValue);
-			});
-
-			oValueList.length = 0;
+			clear();
 
 			valueList.forEach((value, index) => {
 				const oValue = new Text(`${value}`, TextStyle.value);
 
 				oValueList.push(oValue);
 				container.addChild(oValue);
-				oValue.x = config.valueWidth - oValue.width;
-				oValue.y = globalY + index * (config.fontSize + SIZE.GUTTER);
+				oValue.x = valueWidth - oValue.width;
+				oValue.y = globalY + index * (channelHeight + SIZE.GUTTER);
 			});
 
 			startUpdating();
 		}
 
 		function updateValueList() {
-			const { valueWidth } = context.state.channel.config;
+			const { valueWidth } = box;
 
 			oValueList.forEach((oValue, index) => {
 				oValue.text = `${valueList[index]}`;
@@ -61,10 +83,10 @@ export class Value extends Box {
 
 		context
 			.on('channel-display-change', () => {
-				const { valueWidth, fontSize } = context.state.channel.config;
+				const { valueWidth, channelHeight } = this;
 
 				this.setStyle({ width: valueWidth });
-				TextStyle.value.fontSize = fontSize;
+				TextStyle.value.fontSize = channelHeight;
 				drawValueList();
 			});
 	}

@@ -18,6 +18,13 @@ function getRatio(length, total) {
 }
 
 export class Scroller extends Box {
+	get commonChannelNumberInView() {
+		return Math.min(
+			this.parent.maxCommonChannelNumberInView,
+			this.context.state.chart.scroller.length
+		);
+	}
+
 	created() {
 		const box = this;
 		const { container, context } = this;
@@ -37,7 +44,7 @@ export class Scroller extends Box {
 		oTrack.on('click', event => {
 			const bounds = oThumb.getBounds();
 			const { global } = event.data;
-			const step = context.state.chart.scroller.length;
+			const step = box.commonChannelNumberInView;
 
 			context.state.chart.scroller.start += global.y < bounds.y ? -step : step;
 		});
@@ -53,7 +60,7 @@ export class Scroller extends Box {
 				const { chart, channel } = context.state;
 				const newY = event.offsetY - local.startY + local.topY;
 				const fixedY = Math.max(Math.min(newY, local.maxY), local.minY);
-				const length = channel.list.length - chart.scroller.length;
+				const length = channel.common.length - box.commonChannelNumberInView;
 				const start = Math.round(fixedY / local.maxY * length);
 
 				oThumb.y = fixedY;
@@ -91,15 +98,14 @@ export class Scroller extends Box {
 
 			const maxThumbHeight = height - 2 * PADDING;
 			const thumbX = PADDING;
-			const thumbY = PADDING + Math.round(getRatio(scroller.start, channel.list.length) * maxThumbHeight);
+			const thumbY = PADDING + Math.round(getRatio(scroller.start, channel.common.length) * maxThumbHeight);
 			const thumbWidth = width - 2 * PADDING;
 			const thumbHeight = Math.min(
-				Math.round(getRatio(scroller.length, channel.list.length) * maxThumbHeight),
+				Math.round(getRatio(box.commonChannelNumberInView, channel.common.length) * maxThumbHeight),
 				maxThumbHeight
 			);
 
 			local.maxY = maxThumbHeight - thumbHeight;
-
 			oThumb.clear().beginFill(color).lineStyle(0).drawRect(0, 0, thumbWidth, thumbHeight);
 			oThumb.x = thumbX;
 			oThumb.y = thumbY;
@@ -107,12 +113,12 @@ export class Scroller extends Box {
 			hThumb.height = thumbHeight;
 		}
 
-		// context
-		// 	.on('channel-config-change', () => drawScrollbar())
-		// 	.on('scroller-change', () => {
-		// 		if (!local.isDragging) {
-		// 			drawScrollbar();
-		// 		}
-		// 	});
+		context
+			.on('channel-layout-change', () => drawScrollbar())
+			.on('scroller-change', () => {
+				if (!local.isDragging) {
+					drawScrollbar();
+				}
+			});
 	}
 }

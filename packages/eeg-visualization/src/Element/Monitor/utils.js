@@ -72,11 +72,11 @@ const CHANNEL = {
 	FONT_RATIO: 0.6,
 	CATEGORY_MARGIN: 10,
 	SPACE_NUMBER: 1,
+	VALUE_LENGTH: 6
 };
 
-export function computeLayout(totalHeight, { common, top, bottom }) {
+export function computeLayout(totalHeight, scrollerLength, { common, top, bottom }) {
 	const state = {
-		length: common.length,
 		maxName: 0,
 		maxReference: 0
 	};
@@ -90,9 +90,17 @@ export function computeLayout(totalHeight, { common, top, bottom }) {
 		(top.length === 0 ? 0 : CHANNEL.CATEGORY_MARGIN) -
 		(bottom.length === 0 ? 0 : CHANNEL.CATEGORY_MARGIN);
 
-	const channelHeight = Math.max(
-		Math.min(Math.trunc(commonTotalHeight / state.length), CHANNEL.FONT_SIZE.MAX),
+	const minChannelHeight = Math.max(
+		Math.min(Math.trunc(commonTotalHeight / common.length), CHANNEL.FONT_SIZE.MAX),
 		CHANNEL.FONT_SIZE.MIN
+	);
+
+	const maxCommonChannelNumberInView = Math.floor(commonTotalHeight / minChannelHeight);
+	const realCommonLength = Math.min(maxCommonChannelNumberInView, scrollerLength);
+
+	const channelHeight = Math.max(
+		Math.min(Math.trunc(commonTotalHeight / realCommonLength), CHANNEL.FONT_SIZE.MAX),
+		minChannelHeight
 	);
 
 	return {
@@ -102,7 +110,7 @@ export function computeLayout(totalHeight, { common, top, bottom }) {
 			(state.maxName + state.maxReference + CHANNEL.SPACE_NUMBER) *
 			channelHeight * CHANNEL.FONT_RATIO
 		),
-		valueWidth: Math.ceil(channelHeight * 6  * CHANNEL.FONT_RATIO),
-		maxCommonChannelNumberInView: Math.floor(commonTotalHeight / channelHeight)
+		valueWidth: Math.ceil(channelHeight * CHANNEL.VALUE_LENGTH  * CHANNEL.FONT_RATIO),
+		maxCommonChannelNumberInView
 	};
 }

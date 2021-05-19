@@ -19,6 +19,11 @@ export class Timeline extends Box {
 
 		container.addChild(oSecondaryMark, oPrimaryMark, oBorder);
 
+		function clear() {
+			oPrimaryTagList.forEach(oTag => oTag.destroy());
+			oPrimaryTagList.length = 0;
+		}
+
 		function drawTimeline() {
 			const { start, end } = context.state.chart.timeline;
 			const interval = end - start;
@@ -28,13 +33,7 @@ export class Timeline extends Box {
 			oPrimaryMark.clear().lineStyle(2, 0x666666, 1, 0);
 			oSecondaryMark.clear().lineStyle(1, 0x999999, 1, 0);
 			oBorder.clear().lineStyle(1, 0x000000, 1, 0);
-
-			oPrimaryTagList.forEach(oTag => {
-				oTag.destroy();
-				oPrimaryMark.removeChild(oTag);
-			});
-
-			oPrimaryTagList.length = 0;
+			clear();
 
 			marks.secondary
 				.map(mark => (mark - start) / interval * width)
@@ -57,6 +56,6 @@ export class Timeline extends Box {
 
 		context
 			.on('timeline-change', drawTimeline)
-			.on('channel-config-change', drawTimeline);
+			.on('channel-layout-change', drawTimeline);
 	}
 }

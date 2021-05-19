@@ -39,18 +39,15 @@ export class Monitor extends Box {
 
 	created() {
 		const box = this;
-		const { container, context } = box;
-
-		container;
-		context;
+		const { context } = box;
 
 		this.layout = {};
 
 		function updateLayout() {
-			const { options: channelOptions } = context.state.channel;
+			const { channel, chart } = context.state;
+			const { options: channelOptions } = channel;
 
-			box.layout = computeLayout(box.layoutHeight, channelOptions);
-			console.log(box.layout);
+			box.layout = computeLayout(box.layoutHeight, chart.scroller.length, channelOptions);
 			context.emit('channel-layout-change');
 		}
 
