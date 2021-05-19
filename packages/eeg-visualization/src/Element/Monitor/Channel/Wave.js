@@ -5,6 +5,7 @@ const WAVE_LINE_STYLE = new LineStyle();
 
 WAVE_LINE_STYLE.clone = 0x0000FF;
 WAVE_LINE_STYLE.width = 1;
+WAVE_LINE_STYLE.alignment = 1;
 
 export class Wave extends Box {
 	created() {
@@ -42,7 +43,7 @@ export class Wave extends Box {
 
 
 				data.forEach((volt, index) => {
-					const x = (timeList[index] - start) / duration * width;
+					const x = (timeList[index] - start) / duration * width + 1;
 					const y = (volt - -microvolt) / (2 * microvolt) * pixel - pixel / 2 + fontSize / 2;
 
 					oWave.lineTo(x, y);

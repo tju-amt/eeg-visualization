@@ -1,21 +1,5 @@
 import { SIZE } from './constant';
 
-const CHANNEL_LIST = [
-	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	'FP1', 'FPZ', 'FP2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'FZ',
-	'FP1', 'FPZ', 'FP2'
-].map(channel => {
-	return {
-		name: channel,
-		reference: ['M1', 'M2'],
-		data: []
-	};
-});
-
 const MAX_MICROVOLT = 20000000;
 const MIN_MICROVOLT = 2;
 const MAX_PIXEL_HEIGHT = 200;
@@ -38,27 +22,12 @@ export default function ContextState(context) {
 	const channel = {
 		top: [],
 		bottom: [],
-		list: CHANNEL_LIST,
+		common: [],
 		timeList: new Array(10000).fill(1).map((_, index) => now + 40 * index),
-		maxChannelNumberInView: 0,
-		fontSize: 12,
-		config: { fontSize: 12, labelWidth: 0, valueWidth: 0 }
 	};
 
-	const sampling = { running: false, interval: 2000 };
+	const sampling = { running: false, span: 2000 };
 	let hover = 'global';
-
-	function emitChannelDisplayChange() {
-		context.emit('channel-display-change');
-	}
-
-	function updateChannelState() {
-		channel.maxChannelNumberInView = 30;
-		channel.fontSize = 12;
-	}
-
-	context.on('scroller-change', emitChannelDisplayChange);
-	context.on('channel-config-change', emitChannelDisplayChange);
 
 	return {
 		SIZE,
@@ -80,12 +49,12 @@ export default function ContextState(context) {
 					context.emit(flag ? 'sampling-on' : 'sampling-off');
 				}
 			},
-			get interval() {
-				return sampling.interval;
+			get span() {
+				return sampling.span;
 			},
-			set interval(value) {
-				if (sampling.interval !== value) {
-					sampling.interval = value;
+			set span(value) {
+				if (sampling.span !== value) {
+					sampling.span = value;
 					context.emit('interval-change');
 				}
 			}
@@ -105,7 +74,7 @@ export default function ContextState(context) {
 					return chart.scroller.start;
 				},
 				set start(value) {
-					const start = Math.max(Math.min(value, channel.list.length - chart.scroller.length), 0);
+					const start = Math.max(Math.min(value, channel.common.length - chart.scroller.length), 0);
 
 					if (chart.scroller.start !== start) {
 						chart.scroller.start = start;
@@ -178,42 +147,53 @@ export default function ContextState(context) {
 			})
 		}),
 		channel: {
-			get list() {
-				return channel.list;
-			},
-			set list(value) {
-				channel.list = value;
-				context.emit('channel-change');
-				updateChannelState();
+			get common() {
+				return channel.common;
 			},
 			get top() {
 				return channel.top;
 			},
-			set top(value) {
-				channel.top = value;
-				context.emit('channel-change');
-				updateChannelState();
-			},
 			get bottom() {
-				return channel.top;
+				return channel.bottom;
 			},
-			set bottom(value) {
-				channel.bottom = value;
-				context.emit('channel-change');
-				updateChannelState();
-			},
-			get display() {
-				const { start, length } = chart.scroller;
+			// get display() {
+			// 	const { start, length } = chart.scroller;
 
-				return channel.list.slice(start, start + length);
-			},
+			// 	return channel.common.slice(start, start + length);
+			// },
 			get timeList() {
 				return channel.timeList.slice(0);
 			},
-			config: {
-				fontSize: 12,
-				labelWidth: 0,
-				valueWidth: 0
+			get options() {
+				function clone(channel) {
+					return {
+						name: channel.name,
+						reference: channel.reference.slice(0)
+					};
+				}
+
+				return {
+					top: channel.top.map(clone),
+					bottom: channel.bottom.map(clone),
+					common: channel.common.map(clone)
+				};
+			},
+			setup(options) {
+				const { top, bottom, common } = options;
+
+				function createChannel(channelOptions) {
+					return {
+						name: channelOptions.name,
+						reference: channelOptions.reference,
+						data: []
+					};
+				}
+
+				channel.top = top.map(createChannel);
+				channel.bottom = bottom.map(createChannel);
+				channel.common = common.map(createChannel);
+
+				context.emit('channel-change');
 			}
 		}
 	};

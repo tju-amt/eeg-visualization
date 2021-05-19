@@ -107,12 +107,12 @@ export class Scroller extends Box {
 			hThumb.height = thumbHeight;
 		}
 
-		context
-			.on('channel-config-change', () => drawScrollbar())
-			.on('scroller-change', () => {
-				if (!local.isDragging) {
-					drawScrollbar();
-				}
-			});
+		// context
+		// 	.on('channel-config-change', () => drawScrollbar())
+		// 	.on('scroller-change', () => {
+		// 		if (!local.isDragging) {
+		// 			drawScrollbar();
+		// 		}
+		// 	});
 	}
 }

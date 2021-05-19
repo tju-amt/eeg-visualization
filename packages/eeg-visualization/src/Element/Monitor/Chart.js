@@ -43,7 +43,7 @@ export class Chart extends Box {
 					const { sampling, chart } = this.context.state;
 
 					oCurrent.text = `${getFullTimeString(new Date())}`;
-					oScanner.x = (now - chart.timeline.start) / sampling.interval * this.width;
+					oScanner.x = (now - chart.timeline.start) / sampling.span * this.width;
 				});
 			})
 			.on('sampling-off', () => oScanner.visible = false)

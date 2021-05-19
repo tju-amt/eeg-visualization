@@ -7,8 +7,6 @@ import * as Navigator from './src/Element/Navigator';
 const ALL_ELEMENT_CLASS = Object.assign({}, Title, Monitor, Navigator);
 
 import BaseState from './src/State';
-import { computeChannelConfig } from './src/utils';
-
 import layout from './src/layout';
 
 export default function EegVisualization() {
@@ -18,26 +16,12 @@ export default function EegVisualization() {
 	window.c = viewport.context;
 
 	Object.assign(context.state, BaseState(context));
-
-	function updateLabelConfig() {
-		const { channel } = context.state;
-
-		channel.config = computeChannelConfig(
-			boxMap.label.height,
-			channel.display,
-			channel.top,
-			channel.bottom
-		);
-
-		context.emit('channel-config-change');
-	}
+	assembly(ALL_ELEMENT_CLASS, layout, viewport);
 
 	context.on('mounted', function install() {
 		let samplingWatcherId = null;
 
 		context
-			.on('resize', updateLabelConfig)
-			.on('channel-change', updateLabelConfig)
 			.on('sampling-off', () => context.unwatch(samplingWatcherId))
 			.on('sampling-on', () => {
 				const { state } = context;
@@ -52,11 +36,7 @@ export default function EegVisualization() {
 					}
 				}, { end: 0, interval: null });
 			});
-
-		context.emit('channel-change');
 	});
-
-	const boxMap = assembly(ALL_ELEMENT_CLASS, layout, viewport);
 
 	const ON_WHEEL = {
 		'global'(event) {
@@ -76,7 +56,7 @@ export default function EegVisualization() {
 		}
 	};
 
-	return {
+	return Object.freeze({
 		install(element) {
 			viewport.mount(element);
 
@@ -86,14 +66,16 @@ export default function EegVisualization() {
 				ON_WHEEL[context.state.hover](event);
 			});
 		},
-		push() {
-
-		},
 		destroy() {
 			viewport.destroy();
 		},
-		setChannelList(list) {
-			context.state.channel.list = list;
-		}
-	};
+		setChannelList(options) {
+			context.state.channel.setup(options);
+		},
+		// Sampling: Object.freeze({
+		// 	push(sample) {
+
+		// 	}
+		// })
+	});
 }

@@ -32,7 +32,11 @@ export default {
 		const eeg = window.eeg = this._egg = EEG();
 
 		eeg.install(this.$refs.eeg);
-		eeg.setChannelList(CHANNEL_LIST);
+		eeg.setChannelList({
+			common: CHANNEL_LIST,
+			top: [],
+			bottom: []
+		});
 	},
 	destroyed() {
 		this._egg.destroy();

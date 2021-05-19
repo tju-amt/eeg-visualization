@@ -66,3 +66,43 @@ export function getTimelinePostion(width, tagLength, start, end) {
 
 	return mark;
 }
+
+const CHANNEL = {
+	FONT_SIZE: { MAX: 20, MIN: 8 },
+	FONT_RATIO: 0.6,
+	CATEGORY_MARGIN: 10,
+	SPACE_NUMBER: 1,
+};
+
+export function computeLayout(totalHeight, { common, top, bottom }) {
+	const state = {
+		length: common.length,
+		maxName: 0,
+		maxReference: 0
+	};
+
+	common.forEach(channel => {
+		state.maxName = Math.max(channel.name.length, state.maxName);
+		state.maxReference = Math.max(channel.reference.join(',').length, state.maxReference);
+	});
+
+	const commonTotalHeight = totalHeight -
+		(top.length === 0 ? 0 : CHANNEL.CATEGORY_MARGIN) -
+		(bottom.length === 0 ? 0 : CHANNEL.CATEGORY_MARGIN);
+
+	const channelHeight = Math.max(
+		Math.min(Math.trunc(commonTotalHeight / state.length), CHANNEL.FONT_SIZE.MAX),
+		CHANNEL.FONT_SIZE.MIN
+	);
+
+	return {
+		channelHeight,
+		maxNameLength: state.maxName,
+		labelWidth: Math.ceil(
+			(state.maxName + state.maxReference + CHANNEL.SPACE_NUMBER) *
+			channelHeight * CHANNEL.FONT_RATIO
+		),
+		valueWidth: Math.ceil(channelHeight * 6  * CHANNEL.FONT_RATIO),
+		maxCommonChannelNumberInView: Math.floor(commonTotalHeight / channelHeight)
+	};
+}
