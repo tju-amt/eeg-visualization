@@ -33,6 +33,7 @@ export class Scroller extends Box {
 		const oThumb = new Graphics();
 		const hTrack = new Rectangle(0, 0);
 		const hThumb = new Rectangle(0, 0);
+		let commonChannelNumberInView = 0;
 
 		container.addChild(oTrack);
 		oTrack.addChild(oThumb);
@@ -44,7 +45,7 @@ export class Scroller extends Box {
 		oTrack.on('click', event => {
 			const bounds = oThumb.getBounds();
 			const { global } = event.data;
-			const step = box.commonChannelNumberInView;
+			const step = commonChannelNumberInView;
 
 			context.state.chart.scroller.start += global.y < bounds.y ? -step : step;
 		});
@@ -60,7 +61,7 @@ export class Scroller extends Box {
 				const { chart, channel } = context.state;
 				const newY = event.offsetY - local.startY + local.topY;
 				const fixedY = Math.max(Math.min(newY, local.maxY), local.minY);
-				const length = channel.common.length - box.commonChannelNumberInView;
+				const length = channel.common.length - commonChannelNumberInView;
 				const start = Math.round(fixedY / local.maxY * length);
 
 				oThumb.y = fixedY;
@@ -101,7 +102,7 @@ export class Scroller extends Box {
 			const thumbY = PADDING + Math.round(getRatio(scroller.start, channel.common.length) * maxThumbHeight);
 			const thumbWidth = width - 2 * PADDING;
 			const thumbHeight = Math.min(
-				Math.round(getRatio(box.commonChannelNumberInView, channel.common.length) * maxThumbHeight),
+				Math.round(getRatio(commonChannelNumberInView, channel.common.length) * maxThumbHeight),
 				maxThumbHeight
 			);
 
@@ -114,7 +115,10 @@ export class Scroller extends Box {
 		}
 
 		context
-			.on('channel-layout-change', () => drawScrollbar())
+			.on('channel-layout-change', () => {
+				commonChannelNumberInView = box.commonChannelNumberInView;
+				drawScrollbar();
+			})
 			.on('scroller-change', () => {
 				if (!local.isDragging) {
 					drawScrollbar();

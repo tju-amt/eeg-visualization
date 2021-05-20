@@ -26,7 +26,7 @@ export class Timeline extends Box {
 
 		function drawTimeline() {
 			const { start, end } = context.state.chart.timeline;
-			const interval = end - start;
+			const span = end - start;
 			const { width } = box;
 			const marks = getTimelinePostion(width, 80, start, end);
 
@@ -36,12 +36,12 @@ export class Timeline extends Box {
 			clear();
 
 			marks.secondary
-				.map(mark => (mark - start) / interval * width)
+				.map(mark => (mark - start) / span * width)
 				.forEach(pos => oSecondaryMark.moveTo(pos, 0).lineTo(pos, -5));
 
 			marks.primary
 				.forEach(mark => {
-					const pos = (mark - start) / interval * width;
+					const pos = (mark - start) / span * width;
 					const oTag = new Text(getFullTimeString(new Date(mark)), TAG_STYLE);
 
 					oPrimaryMark.addChild(oTag);

@@ -75,6 +75,18 @@ export class Viewport {
 
 	destroy() {
 		this.context.mounted = false;
+
+		(function destroy(thisDisplayObject) {
+			if ('children' in thisDisplayObject) {
+				for (const displayObject of thisDisplayObject.children) {
+					destroy(displayObject);
+				}
+
+				thisDisplayObject.destroy();
+			}
+		}(this.app.stage));
+
+		this.app.ticker.stop();
 		this.app.destroy();
 	}
 

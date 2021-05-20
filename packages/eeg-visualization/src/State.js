@@ -55,7 +55,7 @@ export default function ContextState(context) {
 			set span(value) {
 				if (sampling.span !== value) {
 					sampling.span = value;
-					context.emit('interval-change');
+					context.emit('sampling-span-change');
 				}
 			}
 		},
@@ -180,7 +180,8 @@ export default function ContextState(context) {
 					return {
 						name: channelOptions.name,
 						reference: channelOptions.reference,
-						data: []
+						data: [],
+						last: 0
 					};
 				}
 
