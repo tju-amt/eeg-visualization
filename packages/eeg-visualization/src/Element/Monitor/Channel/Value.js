@@ -1,11 +1,6 @@
 import { Box } from 'pixijs-box';
 import { Text } from 'pixi.js';
-
-import {
-	ValueTextStyle,
-	computeGlobalOffset,
-	SIZE
-} from './utils';
+import { ValueTextStyle, computeGlobalOffset, SIZE } from './utils';
 
 export class Value extends Box {
 	get commonChannelList() {
@@ -22,7 +17,6 @@ export class Value extends Box {
 	created() {
 		const box = this;
 		const oValueList = [];
-		const valueList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 		const { container, context } = this;
 		const state = { timer: null };
 
@@ -33,42 +27,31 @@ export class Value extends Box {
 		function clear() {
 			oValueList.forEach(oValue => oValue.destroy());
 			oValueList.length = 0;
+			context.clearInterval(state.timer);
 		}
 
 		function drawValueList() {
-			const { commonChannelList } = box;
-			const { valueWidth, channelHeight } = box.layout;
-			const globalY = computeGlobalOffset(box.height, commonChannelList.length);
-
-			context.clearInterval(state.timer);
 			clear();
 
-			valueList.forEach((value, index) => {
-				const oValue = new Text(`${value}`, TextStyle.value);
+			const { commonChannelList } = box;
+			const { valueWidth, channelHeight, commonHeight, commonY, bottomY } = box.layout;
+			const { top: topChannelList, bottom: bottomChannelList } = context.state.channel;
+
+			const commonMiddleOffsetY = computeGlobalOffset(commonHeight, channelHeight, commonChannelList.length);
+			const commonInitY = commonMiddleOffsetY + commonY;
+
+			function createIbjectValue(channel, index, initY = 0) {
+				const oValue = new Text(`${channel.last}`, TextStyle.value);
 
 				oValueList.push(oValue);
 				container.addChild(oValue);
 				oValue.x = valueWidth - oValue.width;
-				oValue.y = globalY + index * (channelHeight + SIZE.GUTTER);
-			});
+				oValue.y = initY + index * (channelHeight + SIZE.GUTTER);
+			}
 
-			startUpdating();
-		}
-
-		function updateValueList() {
-			const { valueWidth } = box.layout;
-
-			oValueList.forEach((oValue, index) => {
-				oValue.text = `${valueList[index]}`;
-				oValue.x = valueWidth - oValue.width;
-			});
-		}
-
-		function startUpdating() {
-			state.timer = context.setInterval(() => {
-				valueList.forEach((_, index) => valueList[index] = Math.random().toFixed(3));
-				updateValueList();
-			}, 1000);
+			topChannelList.forEach((channel, index) => createIbjectValue(channel, index));
+			commonChannelList.forEach((channel, index) => createIbjectValue(channel, index, commonInitY));
+			bottomChannelList.forEach((channel, index) => createIbjectValue(channel, index, bottomY));
 		}
 
 		context

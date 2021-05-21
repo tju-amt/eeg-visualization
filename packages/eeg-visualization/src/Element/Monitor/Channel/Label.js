@@ -24,13 +24,13 @@ export class Label extends Box {
 			reference: LabelReferenceTextStyle()
 		};
 
-		function clear() {
+		function clearAll() {
 			oLabelList.forEach(oLabel => oLabel.destroy());
 			oLabelList.length = 0;
 		}
 
 		function render() {
-			clear();
+			clearAll();
 
 			const { commonChannelList } = box;
 			const { maxNameLength, channelHeight, commonHeight, commonY, bottomY } = box.layout;

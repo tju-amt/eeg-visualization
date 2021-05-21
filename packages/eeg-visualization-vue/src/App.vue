@@ -19,7 +19,7 @@ export default {
 	name: 'App',
 	data() {
 		return {
-			width: 800,
+			width: 1200,
 			height: 600
 		};
 	},

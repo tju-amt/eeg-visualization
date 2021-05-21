@@ -5,6 +5,10 @@ const MIN_MICROVOLT = 2;
 const MAX_PIXEL_HEIGHT = 200;
 const MIN_PIXEL_HEIGHT = 50;
 
+function randomInt(from, to) {
+	return Math.trunc(Math.random() * (to - from) + from);
+}
+
 /**
  *
  * @param {import('pixijs-box/src/Context').Context} context
@@ -16,7 +20,7 @@ export default function ContextState(context) {
 	const chart = {
 		scroller: { length: 20, start: 0 },
 		timeline: { start: now, end: now + 40000 },
-		scale: { pixel: 100, microvolt: 1200 }
+		scale: { pixel: 100, microvolt: 2000 }
 	};
 
 	const channel = {
@@ -175,12 +179,13 @@ export default function ContextState(context) {
 			},
 			setup(options) {
 				const { top, bottom, common, all } = options;
+				const now = Date.now();
 
 				channel.all = all.map((channelOptions, index) => {
 					return {
 						name: channelOptions.name,
 						reference: channelOptions.reference,
-						data: [],
+						data: new Array(500).fill(1).map(() => randomInt(-80, 80)),
 						last: 0,
 						index
 					};
@@ -189,6 +194,10 @@ export default function ContextState(context) {
 				channel.top = top.map(index => channel.all[index]);
 				channel.bottom = bottom.map(index => channel.all[index]);
 				channel.common = common.map(index => channel.all[index]);
+
+				channel.timeList = new Array(500).fill(1).map((_, index) => now + 8 * index);
+				chart.timeline.start = now;
+				chart.timeline.end = now + 500 * 8;
 
 				context.emit('channel-change');
 			}
