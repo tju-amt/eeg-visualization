@@ -36,6 +36,6 @@ export function ValueTextStyle() {
 	return BASE_TEXT_STYLE.VALUE.clone();
 }
 
-export function computeGlobalOffset() {
-	return 0;
+export function computeGlobalOffset(containerHeight, itemHeight, itemLength) {
+	return Math.trunc((containerHeight - itemHeight * itemLength) / 2);
 }

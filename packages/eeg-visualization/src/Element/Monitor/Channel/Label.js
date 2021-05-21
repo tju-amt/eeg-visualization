@@ -1,12 +1,6 @@
 import { Box } from 'pixijs-box';
 import { Text } from 'pixi.js';
-
-import {
-	LabelTextStyle,
-	LabelReferenceTextStyle,
-	computeGlobalOffset,
-	SIZE
-} from './utils';
+import { LabelTextStyle, LabelReferenceTextStyle, computeGlobalOffset } from './utils';
 
 export class Label extends Box {
 	get commonChannelList() {
@@ -39,22 +33,29 @@ export class Label extends Box {
 			clear();
 
 			const { commonChannelList } = box;
-			const { maxNameLength, channelHeight } = box.layout;
-			const globalY = computeGlobalOffset(box.height, channelHeight, commonChannelList.length);
+			const { maxNameLength, channelHeight, commonHeight, commonY, bottomY } = box.layout;
+			const { top: topChannelList, bottom: bottomChannelList } = context.state.channel;
+
+			const commonMiddleOffsetY = computeGlobalOffset(commonHeight, channelHeight, commonChannelList.length);
+			const commonInitY = commonMiddleOffsetY + commonY;
 
 			TextStyle.label.fontSize = TextStyle.reference.fontSize = channelHeight;
 
-			commonChannelList.forEach((channel, index) => {
+			function createObjectLabel(channel, index, initY = 0) {
 				const oLabel = new Text(channel.name, TextStyle.label);
 				const oReference = new Text(channel.reference.join(','), TextStyle.reference);
 
 				oLabel.addChild(oReference);
-				oLabel.y = globalY + index * (channelHeight + SIZE.GUTTER);
+				oLabel.y = initY + index * channelHeight;
 				oReference.x = Math.trunc(channelHeight * (maxNameLength + 1) * 0.6);
 
 				container.addChild(oLabel);
 				oLabelList.push(oLabel);
-			});
+			}
+
+			topChannelList.forEach((channel, index) => createObjectLabel(channel, index));
+			commonChannelList.forEach((channel, index) => createObjectLabel(channel, index, commonInitY));
+			bottomChannelList.forEach((channel, index) => createObjectLabel(channel, index, bottomY));
 		}
 
 		context

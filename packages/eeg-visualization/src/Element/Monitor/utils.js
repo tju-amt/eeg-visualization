@@ -70,7 +70,7 @@ export function getTimelinePostion(width, tagLength, start, end) {
 const CHANNEL = {
 	FONT_SIZE: { MAX: 20, MIN: 8 },
 	FONT_RATIO: 0.6,
-	CATEGORY_MARGIN: 10,
+	CATEGORY_MARGIN: 5,
 	SPACE_NUMBER: 1,
 	VALUE_LENGTH: 6
 };
@@ -92,6 +92,10 @@ export function computeLayout(height, scrollerLength, { common, top, bottom, all
 	const realCommonLength = Math.min(maxCommonLength, scrollerLength);
 	const channelHeight = Math.trunc(usedHeight / (realCommonLength + top.length + bottom.length));
 
+	const commonY = top.length === 0 ? 0 : CATEGORY_MARGIN + channelHeight * top.length;
+	const bottomHeight = bottom.length === 0 ? 0 : CATEGORY_MARGIN + channelHeight * bottom.length;
+	const commonHeight = height - bottomHeight - commonY;
+
 	return {
 		channelHeight,
 		maxCommonLength,
@@ -99,6 +103,8 @@ export function computeLayout(height, scrollerLength, { common, top, bottom, all
 		maxNameLength: maxName,
 		labelWidth: Math.ceil((maxName + maxReference + SPACE_NUMBER) * channelHeight * FONT_RATIO),
 		valueWidth: Math.ceil(channelHeight * VALUE_LENGTH  * FONT_RATIO),
-		commonY: top.length === 0 ? 0 : CATEGORY_MARGIN + channelHeight * top.length
+		commonY,
+		commonHeight,
+		bottomY: height - channelHeight * bottom.length
 	};
 }
