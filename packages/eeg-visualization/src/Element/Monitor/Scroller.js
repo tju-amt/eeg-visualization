@@ -18,9 +18,13 @@ function getRatio(length, total) {
 }
 
 export class Scroller extends Box {
+	get layout() {
+		return this.parent.layout;
+	}
+
 	get commonChannelNumberInView() {
 		return Math.min(
-			this.parent.maxCommonChannelNumberInView,
+			this.parent.layout.maxCommonLength,
 			this.context.state.chart.scroller.length
 		);
 	}

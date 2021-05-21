@@ -14,7 +14,7 @@ export class Wave extends Box {
 
 	get commonChannelNumber() {
 		return Math.min(
-			this.parent.maxCommonChannelNumberInView,
+			this.parent.maxCommonLength,
 			this.context.state.chart.scroller.length
 		);
 	}
@@ -24,6 +24,10 @@ export class Wave extends Box {
 		const start = this.context.state.chart.scroller.start;
 
 		return this.context.state.channel.common.slice(start, start + length);
+	}
+
+	get layout() {
+		return this.parent.layout;
 	}
 
 	created() {

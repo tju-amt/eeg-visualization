@@ -23,7 +23,8 @@ export default function ContextState(context) {
 		top: [],
 		bottom: [],
 		common: [],
-		timeList: [],
+		all: [],
+		timeList: []
 	};
 
 	const sampling = { running: false, span: 2000 };
@@ -160,34 +161,34 @@ export default function ContextState(context) {
 				return channel.timeList.slice(0);
 			},
 			get options() {
-				function clone(channel) {
-					return {
-						name: channel.name,
-						reference: channel.reference.slice(0)
-					};
-				}
-
 				return {
-					top: channel.top.map(clone),
-					bottom: channel.bottom.map(clone),
-					common: channel.common.map(clone)
+					top: channel.top.map(channel => channel.index),
+					bottom: channel.bottom.map(channel => channel.index),
+					common: channel.common.map(channel => channel.index),
+					all: channel.all.map((channel) => {
+						return {
+							name: channel.name,
+							reference: channel.reference.slice(0)
+						};
+					})
 				};
 			},
 			setup(options) {
-				const { top, bottom, common } = options;
+				const { top, bottom, common, all } = options;
 
-				function createChannel(channelOptions) {
+				channel.all = all.map((channelOptions, index) => {
 					return {
 						name: channelOptions.name,
 						reference: channelOptions.reference,
 						data: [],
-						last: 0
+						last: 0,
+						index
 					};
-				}
+				});
 
-				channel.top = top.map(createChannel);
-				channel.bottom = bottom.map(createChannel);
-				channel.common = common.map(createChannel);
+				channel.top = top.map(index => channel.all[index]);
+				channel.bottom = bottom.map(index => channel.all[index]);
+				channel.common = common.map(index => channel.all[index]);
 
 				context.emit('channel-change');
 			}

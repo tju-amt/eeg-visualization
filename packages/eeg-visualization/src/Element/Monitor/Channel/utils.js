@@ -36,10 +36,6 @@ export function ValueTextStyle() {
 	return BASE_TEXT_STYLE.VALUE.clone();
 }
 
-export function computeGlobalOffset(/*containerHeight, length, fontSize */) {
-	// return Math.trunc(
-	// 	(containerHeight - (length * fontSize + (length - 1) * SIZE.GUTTER)) / 2
-	// );
-
+export function computeGlobalOffset() {
 	return 0;
 }

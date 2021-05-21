@@ -8,26 +8,15 @@ import {
 } from './utils';
 
 export class Value extends Box {
-	get channelHeight() {
-		return this.parent.channelHeight;
-	}
-
-	get valueWidth() {
-		return this.parent.valueWidth;
-	}
-
-	get commonChannelNumber() {
-		return Math.min(
-			this.parent.maxCommonChannelNumberInView,
-			this.context.state.chart.scroller.length
-		);
-	}
-
 	get commonChannelList() {
-		const length = this.commonChannelNumber;
+		const length = this.layout.commonLength;
 		const start = this.context.state.chart.scroller.start;
 
 		return this.context.state.channel.common.slice(start, start + length);
+	}
+
+	get layout() {
+		return this.parent.layout;
 	}
 
 	created() {
@@ -47,7 +36,8 @@ export class Value extends Box {
 		}
 
 		function drawValueList() {
-			const { commonChannelList, valueWidth, channelHeight } = box;
+			const { commonChannelList } = box;
+			const { valueWidth, channelHeight } = box.layout;
 			const globalY = computeGlobalOffset(box.height, commonChannelList.length);
 
 			context.clearInterval(state.timer);
@@ -66,7 +56,7 @@ export class Value extends Box {
 		}
 
 		function updateValueList() {
-			const { valueWidth } = box;
+			const { valueWidth } = box.layout;
 
 			oValueList.forEach((oValue, index) => {
 				oValue.text = `${valueList[index]}`;
@@ -83,7 +73,7 @@ export class Value extends Box {
 
 		context
 			.on('channel-display-change', () => {
-				const { valueWidth, channelHeight } = this;
+				const { valueWidth, channelHeight } = this.layout;
 
 				this.setStyle({ width: valueWidth });
 				TextStyle.value.fontSize = channelHeight;

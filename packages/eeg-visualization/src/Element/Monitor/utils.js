@@ -75,42 +75,30 @@ const CHANNEL = {
 	VALUE_LENGTH: 6
 };
 
-export function computeLayout(totalHeight, scrollerLength, { common, top, bottom }) {
-	const state = {
-		maxName: 0,
-		maxReference: 0
-	};
+export function computeLayout(height, scrollerLength, { common, top, bottom, all }) {
+	const { CATEGORY_MARGIN, FONT_SIZE, SPACE_NUMBER, VALUE_LENGTH, FONT_RATIO } = CHANNEL;
+	const fixedLength = top.length + bottom.length;
 
-	common.forEach(channel => {
-		state.maxName = Math.max(channel.name.length, state.maxName);
-		state.maxReference = Math.max(channel.reference.join(',').length, state.maxReference);
-	});
-
-	const commonTotalHeight = totalHeight -
-		(top.length === 0 ? 0 : CHANNEL.CATEGORY_MARGIN) -
-		(bottom.length === 0 ? 0 : CHANNEL.CATEGORY_MARGIN);
-
-	const minChannelHeight = Math.max(
-		Math.min(Math.trunc(commonTotalHeight / common.length), CHANNEL.FONT_SIZE.MAX),
-		CHANNEL.FONT_SIZE.MIN
-	);
-
-	const maxCommonChannelNumberInView = Math.floor(commonTotalHeight / minChannelHeight);
-	const realCommonLength = Math.min(maxCommonChannelNumberInView, scrollerLength);
-
-	const channelHeight = Math.max(
-		Math.min(Math.trunc(commonTotalHeight / realCommonLength), CHANNEL.FONT_SIZE.MAX),
-		minChannelHeight
-	);
+	/**
+	 * Maybe not all channels are used. The sum of length of `common`, `top`, `bottom`
+	 * less then the length of `all`.
+	 */
+	const totalLength = fixedLength + common.length;
+	const maxName = Math.max(...all.map(c => c.name.length));
+	const maxReference = Math.max(...all.map(c => c.reference.join(',').length));
+	const usedHeight = height - (top.length === 0 ? 0 : CATEGORY_MARGIN) - (bottom.length === 0 ? 0 : CATEGORY_MARGIN);
+	const minHeight = Math.max(Math.min(Math.trunc(usedHeight / totalLength), FONT_SIZE.MAX), FONT_SIZE.MIN);
+	const maxCommonLength = Math.floor(usedHeight / minHeight) - top.length - bottom.length;
+	const realCommonLength = Math.min(maxCommonLength, scrollerLength);
+	const channelHeight = Math.trunc(usedHeight / (realCommonLength + top.length + bottom.length));
 
 	return {
 		channelHeight,
-		maxNameLength: state.maxName,
-		labelWidth: Math.ceil(
-			(state.maxName + state.maxReference + CHANNEL.SPACE_NUMBER) *
-			channelHeight * CHANNEL.FONT_RATIO
-		),
-		valueWidth: Math.ceil(channelHeight * CHANNEL.VALUE_LENGTH  * CHANNEL.FONT_RATIO),
-		maxCommonChannelNumberInView
+		maxCommonLength,
+		commonLength: realCommonLength,
+		maxNameLength: maxName,
+		labelWidth: Math.ceil((maxName + maxReference + SPACE_NUMBER) * channelHeight * FONT_RATIO),
+		valueWidth: Math.ceil(channelHeight * VALUE_LENGTH  * FONT_RATIO),
+		commonY: top.length === 0 ? 0 : CATEGORY_MARGIN + channelHeight * top.length
 	};
 }

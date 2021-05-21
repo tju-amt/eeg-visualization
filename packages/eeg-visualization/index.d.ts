@@ -43,10 +43,13 @@ namespace EegVisualization {
 				style: object;
 			}
 
+			type ChannelIndex = number;
+
 			interface Options {
-				top: ChannelOptions[],
-				bottom: ChannelOptions[],
-				common: ChannelOptions[]
+				top: ChannelIndex[];
+				bottom: ChannelIndex[];
+				common: ChannelIndex[];
+				all: ChannelOptions[];
 			}
 		}
 

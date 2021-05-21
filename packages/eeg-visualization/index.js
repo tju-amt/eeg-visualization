@@ -72,7 +72,7 @@ export default function EegVisualization() {
 		destroy() {
 			viewport.destroy();
 		},
-		setChannelList(options) {
+		setup(options) {
 			context.state.channel.setup(options);
 		},
 		// Sampling: Object.freeze({

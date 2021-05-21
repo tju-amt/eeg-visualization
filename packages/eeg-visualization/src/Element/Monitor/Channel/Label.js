@@ -9,30 +9,15 @@ import {
 } from './utils';
 
 export class Label extends Box {
-	get channelHeight() {
-		return this.parent.channelHeight;
-	}
-
-	get labelWidth() {
-		return this.parent.labelWidth;
-	}
-
-	get maxNameLength() {
-		return this.parent.maxNameLength;
-	}
-
-	get commonChannelNumber() {
-		return Math.min(
-			this.parent.maxCommonChannelNumberInView,
-			this.context.state.chart.scroller.length
-		);
-	}
-
 	get commonChannelList() {
-		const length = this.commonChannelNumber;
+		const length = this.layout.commonLength;
 		const start = this.context.state.chart.scroller.start;
 
 		return this.context.state.channel.common.slice(start, start + length);
+	}
+
+	get layout() {
+		return this.parent.layout;
 	}
 
 	created() {
@@ -53,8 +38,9 @@ export class Label extends Box {
 		function render() {
 			clear();
 
-			const { commonChannelList, maxNameLength, channelHeight } = box;
-			const globalY = computeGlobalOffset(box.height, commonChannelList.length);
+			const { commonChannelList } = box;
+			const { maxNameLength, channelHeight } = box.layout;
+			const globalY = computeGlobalOffset(box.height, channelHeight, commonChannelList.length);
 
 			TextStyle.label.fontSize = TextStyle.reference.fontSize = channelHeight;
 
@@ -73,7 +59,7 @@ export class Label extends Box {
 
 		context
 			.on('channel-display-change', () => {
-				this.setStyle({ width: this.labelWidth });
+				this.setStyle({ width: this.layout.labelWidth });
 				render();
 			});
 	}
