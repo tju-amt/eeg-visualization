@@ -32,6 +32,7 @@ export class Monitor extends Box {
 		context
 			.on('mounted', updateLayout)
 			.on('resize', updateLayout)
-			.on('channel-change', updateLayout);
+			.on('channel-change', updateLayout)
+			.on('scroller-change', updateLayout);
 	}
 }

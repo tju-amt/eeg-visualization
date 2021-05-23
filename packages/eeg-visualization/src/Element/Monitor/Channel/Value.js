@@ -40,7 +40,7 @@ export class Value extends Box {
 			const commonMiddleOffsetY = computeGlobalOffset(commonHeight, channelHeight, commonChannelList.length);
 			const commonInitY = commonMiddleOffsetY + commonY;
 
-			function createIbjectValue(channel, index, initY = 0) {
+			function createObjectValue(channel, index, initY = 0) {
 				const oValue = new Text(`${channel.last}`, TextStyle.value);
 
 				oValueList.push(oValue);
@@ -49,9 +49,9 @@ export class Value extends Box {
 				oValue.y = initY + index * (channelHeight + SIZE.GUTTER);
 			}
 
-			topChannelList.forEach((channel, index) => createIbjectValue(channel, index));
-			commonChannelList.forEach((channel, index) => createIbjectValue(channel, index, commonInitY));
-			bottomChannelList.forEach((channel, index) => createIbjectValue(channel, index, bottomY));
+			topChannelList.forEach((channel, index) => createObjectValue(channel, index));
+			commonChannelList.forEach((channel, index) => createObjectValue(channel, index, commonInitY));
+			bottomChannelList.forEach((channel, index) => createObjectValue(channel, index, bottomY));
 		}
 
 		context

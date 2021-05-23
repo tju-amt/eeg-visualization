@@ -18,7 +18,7 @@ export default function ContextState(context) {
 	const now = Date.now();
 
 	const chart = {
-		scroller: { length: 20, start: 0 },
+		scroller: { length: 40, start: 0 },
 		timeline: { start: now, end: now + 40000 },
 		scale: { pixel: 100, microvolt: 2000 }
 	};

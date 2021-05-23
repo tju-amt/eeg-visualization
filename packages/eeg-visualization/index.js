@@ -19,8 +19,8 @@ export default function EegVisualization() {
 	assembly(ALL_ELEMENT_CLASS, layout, viewport);
 
 	context
+		.on('scroller-change', () => context.emit('channel-layout-change'))
 		.on('channel-layout-change', () => context.emit('channel-display-change'))
-		.on('scroller-change', () => context.emit('channel-display-change'))
 		.on('mounted', function install() {
 			let samplingWatcherId = null;
 
