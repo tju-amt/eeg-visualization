@@ -16,6 +16,9 @@ function randomInt(from, to) {
  */
 export default function ContextState(context) {
 	const now = Date.now();
+	const title = {
+		text: '无设备'
+	};
 
 	const chart = {
 		scroller: { length: 40, start: 0 },
@@ -41,6 +44,15 @@ export default function ContextState(context) {
 		},
 		set hover(value) {
 			hover = value;
+		},
+		title: {
+			set text(value) {
+				title.text = value;
+				context.emit('title-change');
+			},
+			get text() {
+				return title.text;
+			}
 		},
 		sampling: {
 			get running() {
