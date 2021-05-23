@@ -18,7 +18,6 @@ export class Value extends Box {
 		const box = this;
 		const oValueList = [];
 		const { container, context } = this;
-		const state = { timer: null };
 
 		const TextStyle = {
 			value: ValueTextStyle()
@@ -27,7 +26,6 @@ export class Value extends Box {
 		function clear() {
 			oValueList.forEach(oValue => oValue.destroy());
 			oValueList.length = 0;
-			context.clearInterval(state.timer);
 		}
 
 		function drawValueList() {
@@ -53,6 +51,8 @@ export class Value extends Box {
 			commonChannelList.forEach((channel, index) => createObjectValue(channel, index, commonInitY));
 			bottomChannelList.forEach((channel, index) => createObjectValue(channel, index, bottomY));
 		}
+
+		context.setInterval(drawValueList, 1000);
 
 		context
 			.on('channel-display-change', () => {

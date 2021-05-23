@@ -20,12 +20,15 @@ function voltString(microvolt) {
 
 const BASE_STYLE = new TextStyle({
 	fontSize: 12,
+	fontWeight: '600',
 	fontFamily: 'Consolas',
 	dropShadow: false,
 	dropShadowAlpha: 1,
 	dropShadowAngle: 0,
-	dropShadowBlur: 3,
+	dropShadowBlur: 5,
 	dropShadowColor: '0x000000',
+	strokeThickness: 4,
+	stroke: 0xffffff,
 	dropShadowDistance: 0
 });
 
@@ -38,7 +41,7 @@ export class Scale extends Box {
 		const oRuler = new Graphics();
 
 		oRulerShadow.visible = false;
-		oRulerShadow.filters = [new filters.BlurFilter(2)];
+		oRulerShadow.filters = [new filters.BlurFilter(4)];
 
 		const sVolt = BASE_STYLE.clone();
 		const sPixel = BASE_STYLE.clone();
@@ -61,7 +64,12 @@ export class Scale extends Box {
 
 			oRuler
 				.clear()
-				.lineStyle(1, 0x000000, 1, 0)
+				.lineStyle(5, 0xFFFFFF, 1)
+				.moveTo(x - 2, startY)
+				.lineTo(width - PADDING, startY)
+				.lineTo(width - PADDING, endY)
+				.lineTo(x - 2, endY)
+				.lineStyle(1, 0x000000, 1)
 				.moveTo(x, startY)
 				.lineTo(width - PADDING, startY)
 				.lineTo(width - PADDING, endY)
@@ -69,7 +77,7 @@ export class Scale extends Box {
 
 			oRulerShadow
 				.clear()
-				.lineStyle(1, 0x000000, 1, 0)
+				.lineStyle(1, 0x000000, 1)
 				.moveTo(x, startY)
 				.lineTo(width - PADDING, startY)
 				.lineTo(width - PADDING, endY)
