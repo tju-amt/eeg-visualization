@@ -22,7 +22,7 @@ export default function ContextState(context) {
 
 	const chart = {
 		scroller: { length: 40, start: 0 },
-		timeline: { start: now, end: now + 40000 },
+		timeline: { start: now, end: now + 40000, grid: false },
 		scale: { pixel: 100, microvolt: 2000 }
 	};
 
@@ -158,6 +158,17 @@ export default function ContextState(context) {
 				set end(value) {
 					if (chart.timeline.end !== value) {
 						chart.timeline.end = value;
+						context.emit('timeline-change');
+					}
+				},
+				get grid() {
+					return chart.timeline.grid;
+				},
+				set grid(value) {
+					const flag = Boolean(value);
+
+					if (flag !== chart.timeline.grid) {
+						chart.timeline.grid = flag;
 						context.emit('timeline-change');
 					}
 				}

@@ -8,6 +8,9 @@ const TAG_STYLE = new TextStyle({
 	fill: 0x666666
 });
 
+const PRIMARY_LENGTH = 10;
+const SECONDARY_LENGTH = 5;
+
 export class Timeline extends Box {
 	created() {
 		const box = this;
@@ -25,19 +28,22 @@ export class Timeline extends Box {
 		}
 
 		function drawTimeline() {
-			const { start, end } = context.state.chart.timeline;
+			const { start, end, grid } = context.state.chart.timeline;
 			const span = end - start;
 			const { width } = box;
 			const marks = getTimelinePostion(width, 80, start, end);
+			const lineEnd = box.parent.height - context.state.SIZE.CHART_PADDING_BOTTOM;
+			const primaryEnd = grid ? lineEnd : PRIMARY_LENGTH;
+			const secondaryEnd = grid ? lineEnd : SECONDARY_LENGTH;
 
-			oPrimaryMark.clear().lineStyle(2, 0x666666, 1, 0);
-			oSecondaryMark.clear().lineStyle(1, 0x999999, 1, 0);
+			oPrimaryMark.clear().lineStyle(1, 0xaaaaaa, 1, 0);
+			oSecondaryMark.clear().lineStyle(1, 0xdddddd, 1, 0);
 			oBorder.clear().lineStyle(1, 0x000000, 1, 0);
 			clear();
 
 			marks.secondary
 				.map(mark => (mark - start) / span * width)
-				.forEach(pos => oSecondaryMark.moveTo(pos, 0).lineTo(pos, -5));
+				.forEach(pos => oSecondaryMark.moveTo(pos, 0).lineTo(pos, -secondaryEnd));
 
 			marks.primary
 				.forEach(mark => {
@@ -46,7 +52,7 @@ export class Timeline extends Box {
 
 					oPrimaryMark.addChild(oTag);
 					oPrimaryTagList.push(oTag);
-					oPrimaryMark.moveTo(pos, 0).lineTo(pos, -10);
+					oPrimaryMark.moveTo(pos, 0).lineTo(pos, -primaryEnd);
 					oTag.x = Math.trunc(pos - oTag.width / 2);
 					oTag.y = 4;
 				});

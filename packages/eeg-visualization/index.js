@@ -20,26 +20,7 @@ export default function EegVisualization() {
 
 	context
 		.on('scroller-change', () => context.emit('channel-layout-change'))
-		.on('channel-layout-change', () => context.emit('channel-display-change'))
-		.on('mounted', function install() {
-			let samplingWatcherId = null;
-
-			context
-				.on('sampling-off', () => context.unwatch(samplingWatcherId))
-				.on('sampling-on', () => {
-					const { state } = context;
-
-					samplingWatcherId = context.watch((_c, scope, now) => {
-						const { interval } = state.sampling;
-
-						if (now > scope.end || scope.interval !== interval) {
-							state.chart.timeline.start = now;
-							state.chart.timeline.end = scope.end = now + interval;
-							scope.interval = interval;
-						}
-					}, { end: 0, interval: null });
-				});
-		});
+		.on('channel-layout-change', () => context.emit('channel-display-change'));
 
 	const ON_WHEEL = {
 		'global'(event) {
@@ -75,10 +56,17 @@ export default function EegVisualization() {
 		setup(options) {
 			context.state.channel.setup(options);
 		},
-		// Sampling: Object.freeze({
-		// 	push(sample) {
+		push() {
 
-		// 	}
-		// })
+		},
+		set sampleList(value) {
+			console.log(value);
+		},
+		setState() {
+
+		},
+		getState() {
+
+		}
 	});
 }
