@@ -1,67 +1,59 @@
 import { Box } from 'pixijs-box';
-import { Graphics, Text } from 'pixi.js';
-import { getFullTimeString } from './utils';
+import { Graphics } from 'pixi.js';
+// import { getFullTimeString } from './utils';
 
-const INIT_TIME = '00:00:00.000';
 export class Chart extends Box {
 	get layout() {
 		return this.parent.layout;
 	}
 
 	created() {
-		const { CHART_PADDING_BOTTOM } = this.context.state.SIZE;
-		const oScanner = new Graphics();
-		const oCurrent = new Text(INIT_TIME, { fontSize: 12, fontFamily: 'Consolas' });
+		const box = this;
+		const { container, context } = box;
+		const { CHART_PADDING_BOTTOM } = context.state.SIZE;
 		const oBorder = new Graphics();
+		const bounds = { x: 0 };
 
-		oScanner.visible = false;
-		oScanner.addChild(oCurrent);
-		this.container.addChild(oBorder, oScanner);
+		container.interactive = true;
+		// oScanner.visible = false;
+		// oScanner.addChild(oCurrent);
+		container.addChild(oBorder);
 
-		const state = {
-			scannerTimer: null
-		};
 
-		const drawBorder = () => {
-			const { width, height } = this;
+		// const state = {
+		// 	scannerTimer: null
+		// };
 
+		function drawBorder() {
 			oBorder
-				.clear().lineStyle(1, 0x999999, 1, 0)
-				.drawRect(0, 0, width, height  - CHART_PADDING_BOTTOM);
-		};
+				.clear().lineStyle(1, 0x999999, 1)
+				.drawRect(0, 0, box.width, box.height  - CHART_PADDING_BOTTOM);
+		}
 
-		const drawScanner = () => {
-			oScanner
-				.clear().lineStyle(1, 0x000000, 1, 0)
-				.moveTo(0, 0).lineTo(0, this.height - CHART_PADDING_BOTTOM)
-				.x = 0;
+		// .on('sampling-on', () => {
+		// 	oScanner.visible = true;
+		// 	state.scannerTimer = context.watch((_c, _s, now) => {
+		// 		const { sampling, chart } = context.state;
 
-			oCurrent.y = this.height + 4 - CHART_PADDING_BOTTOM;
-			oCurrent.x = -oCurrent.width / 2;
-		};
-
-		this.context
-			.on('sampling-on', () => {
-				oScanner.visible = true;
-				state.scannerTimer = this.context.watch((_c, _s, now) => {
-					const { sampling, chart } = this.context.state;
-
-					oCurrent.text = `${getFullTimeString(new Date())}`;
-					oScanner.x = (now - chart.timeline.start) / sampling.span * this.width;
-				});
-			})
-			.on('sampling-off', () => oScanner.visible = false)
+		// 		oCurrent.text = `${getFullTimeString(new Date())}`;
+		// 		oScanner.x = (now - chart.timeline.start) / sampling.span * this.width;
+		// 	});
+		// })
+		// .on('sampling-off', () => oScanner.visible = false)
+		context
 			.on('channel-layout-change', () => {
-				const { SIZE } = this.context.state;
-				const { labelWidth, valueWidth } = this.layout;
+				const { SIZE } = context.state;
+				const { labelWidth, valueWidth } = box.layout;
 
-				this.setStyle({
+				box.setStyle({
 					left: labelWidth + SIZE.GUTTER,
 					right: valueWidth + SIZE.SCROLLER_WIDTH + SIZE.GUTTER * 2
 				});
 
 				drawBorder();
-				drawScanner();
+				// drawScanner();
+				bounds.x = labelWidth + SIZE.GUTTER + 3;
+				console.log(bounds.x);
 			});
 	}
 }

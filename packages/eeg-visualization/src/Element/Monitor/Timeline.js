@@ -50,7 +50,7 @@ export class Timeline extends Box {
 
 			oPrimaryMark.clear();
 			oSecondaryMark.clear();
-			oBorder.clear().lineStyle(1, 0x000000, 1, 0);
+			oBorder.clear().lineStyle(1, 0x000000, 1);
 			(grid ? setStyleWithGrid : setStyleWithoutGrid)();
 
 			marks.secondary

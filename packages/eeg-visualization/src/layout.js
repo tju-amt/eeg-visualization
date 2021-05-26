@@ -70,15 +70,6 @@ export default [
 				},
 				children: [
 					{
-						className: 'Scale',
-						style: {
-							height: 240,
-							width: 80,
-							right: GUTTER,
-							bottom: GUTTER + CHART_PADDING_BOTTOM
-						}
-					},
-					{
 						className: 'Timeline',
 						style: {
 							left: 0,
@@ -95,7 +86,16 @@ export default [
 							left: 0,
 							right: 0
 						}
-					}
+					},
+					{
+						className: 'Scale',
+						style: {
+							height: 240,
+							width: 80,
+							right: GUTTER,
+							bottom: GUTTER + CHART_PADDING_BOTTOM
+						}
+					},
 				]
 			},
 			{

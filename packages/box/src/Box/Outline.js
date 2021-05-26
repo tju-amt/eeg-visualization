@@ -43,7 +43,7 @@ export default function Outline(box) {
 			oId.text = box.name;
 
 			oRect
-				.clear().lineStyle(1, 0x666666, 1, 0)
+				.clear().lineStyle(1, 0x666666, 1)
 				.beginFill(0x000000, 0.05)
 				.drawRect(0, 0, box.width, box.height)
 				.beginFill(0x0000FF, 0.3)

@@ -1,13 +1,9 @@
 import { Box } from 'pixijs-box';
-import { Graphics, LineStyle } from 'pixi.js';
+import { Graphics, Text } from 'pixi.js';
 import { computeGlobalOffset } from './utils';
+import { getFullTimeString } from '../utils';
 
-const WAVE_LINE_STYLE = new LineStyle();
-
-WAVE_LINE_STYLE.clone = 0x0000FF;
-WAVE_LINE_STYLE.width = 1;
-WAVE_LINE_STYLE.alignment = 1;
-
+const INIT_TIME = '00:00:00.000';
 export class Wave extends Box {
 	get commonChannelList() {
 		const length = this.layout.commonLength;
@@ -23,11 +19,39 @@ export class Wave extends Box {
 	created() {
 		const box = this;
 		const { container, context } = box;
+		const { CHART_PADDING_BOTTOM } = context.state.SIZE;
 		const oWaveList = [];
+
+		const oScanner = new Graphics();
+		const oCurrent = new Text(INIT_TIME, { fontSize: 12, fontFamily: 'Consolas', strokeThickness: 4,stroke: 0xffffff });
+		const bounds = { x: 0, width: 0 };
+
+		oScanner.addChild(oCurrent);
+		container.addChild(oScanner);
+		container.interactive = true;
+		container
+			.on('mousemove', event => {
+				const x = Math.min(Math.max(event.data.global.x - bounds.x, 0), bounds.width);
+				const { start, end } = context.state.chart.timeline;
+				const currentDate = new Date(Math.trunc(x / bounds.width * (end - start) + start));
+
+				oScanner.x = x;
+				oCurrent.text = getFullTimeString(currentDate);
+			});
 
 		function clearAll() {
 			oWaveList.forEach(oWave => oWave.destroy());
 			oWaveList.length = 0;
+		}
+
+		function drawScanner() {
+			oScanner
+				.clear().lineStyle(1, 0x000000, 1)
+				.moveTo(0, 0).lineTo(0, box.height - CHART_PADDING_BOTTOM)
+				.x = 0;
+
+			oCurrent.y = box.height + 4 - CHART_PADDING_BOTTOM;
+			oCurrent.x = -oCurrent.width / 2;
 		}
 
 		function render() {
@@ -66,11 +90,17 @@ export class Wave extends Box {
 			topChannelList.forEach((channel, index) => createObjectWave(channel, index));
 			commonChannelList.forEach((channel, index) => createObjectWave(channel, index, commonInitY));
 			bottomChannelList.forEach((channel, index) => createObjectWave(channel, index, bottomY));
+
+			oScanner.visible = false;
+			bounds.x = container.getBounds().x;
+			bounds.width = container.getBounds().width;
+			oScanner.visible = true;
 		}
 
 		context
 			.on('channel-display-change', render)
 			.on('scale-pixel-change', render)
-			.on('scale-microvolt-change', render);
+			.on('scale-microvolt-change', render)
+			.on('channel-layout-change', drawScanner);
 	}
 }
