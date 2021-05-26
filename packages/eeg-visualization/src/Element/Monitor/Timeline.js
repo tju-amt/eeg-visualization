@@ -27,7 +27,19 @@ export class Timeline extends Box {
 			oPrimaryTagList.length = 0;
 		}
 
+		function setStyleWithGrid() {
+			oPrimaryMark.lineStyle(1, 0xAAAAAA);
+			oSecondaryMark.lineStyle(1, 0xDDDDDD);
+		}
+
+		function setStyleWithoutGrid() {
+			oPrimaryMark.lineStyle(2, 0x666666);
+			oSecondaryMark.lineStyle(1, 0x999999);
+		}
+
 		function drawTimeline() {
+			clear();
+
 			const { start, end, grid } = context.state.chart.timeline;
 			const span = end - start;
 			const { width } = box;
@@ -36,10 +48,10 @@ export class Timeline extends Box {
 			const primaryEnd = grid ? lineEnd : PRIMARY_LENGTH;
 			const secondaryEnd = grid ? lineEnd : SECONDARY_LENGTH;
 
-			oPrimaryMark.clear().lineStyle(1, 0xaaaaaa, 1, 0);
-			oSecondaryMark.clear().lineStyle(1, 0xdddddd, 1, 0);
+			oPrimaryMark.clear();
+			oSecondaryMark.clear();
 			oBorder.clear().lineStyle(1, 0x000000, 1, 0);
-			clear();
+			(grid ? setStyleWithGrid : setStyleWithoutGrid)();
 
 			marks.secondary
 				.map(mark => (mark - start) / span * width)
