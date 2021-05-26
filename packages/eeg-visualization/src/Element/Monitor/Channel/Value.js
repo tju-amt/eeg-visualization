@@ -34,12 +34,18 @@ export class Value extends Box {
 			const { commonChannelList } = box;
 			const { valueWidth, channelHeight, commonHeight, commonY, bottomY } = box.layout;
 			const { top: topChannelList, bottom: bottomChannelList } = context.state.channel;
+			const dataIndex = context.state.chart.tooltip.position;
 
 			const commonMiddleOffsetY = computeGlobalOffset(commonHeight, channelHeight, commonChannelList.length);
 			const commonInitY = commonMiddleOffsetY + commonY;
 
 			function createObjectValue(channel, index, initY = 0) {
-				const oValue = new Text(`${channel.last}`, TextStyle.value);
+				const textStyle = TextStyle.value.clone();
+				const oValue = new Text(`${channel.data[dataIndex].toFixed(1)}`, textStyle);
+
+				if (channel.style.color) {
+					textStyle.fill = channel.style.color;
+				}
 
 				oValueList.push(oValue);
 				container.addChild(oValue);
@@ -52,9 +58,8 @@ export class Value extends Box {
 			bottomChannelList.forEach((channel, index) => createObjectValue(channel, index, bottomY));
 		}
 
-		context.setInterval(drawValueList, 1000);
-
 		context
+			.on('value-select', drawValueList)
 			.on('channel-display-change', () => {
 				const { valueWidth, channelHeight } = this.layout;
 

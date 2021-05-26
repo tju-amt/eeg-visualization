@@ -4,6 +4,15 @@ import { computeGlobalOffset } from './utils';
 import { getFullTimeString } from '../utils';
 
 const INIT_TIME = '00:00:00.000';
+
+function ScannerComponent() {
+	const oScanner = new Graphics();
+	const oCurrent = new Text(INIT_TIME, { fontSize: 12, fontFamily: 'Consolas', strokeThickness: 4,stroke: 0xffffff });
+
+	oScanner.addChild(oCurrent);
+
+	return { oScanner, oCurrent };
+}
 export class Wave extends Box {
 	get commonChannelList() {
 		const length = this.layout.commonLength;
@@ -21,22 +30,26 @@ export class Wave extends Box {
 		const { container, context } = box;
 		const { CHART_PADDING_BOTTOM } = context.state.SIZE;
 		const oWaveList = [];
-
-		const oScanner = new Graphics();
-		const oCurrent = new Text(INIT_TIME, { fontSize: 12, fontFamily: 'Consolas', strokeThickness: 4,stroke: 0xffffff });
+		const { oCurrent, oScanner } = ScannerComponent();
 		const bounds = { x: 0, width: 0 };
 
-		oScanner.addChild(oCurrent);
+		let debounceTimer = null;
+
 		container.addChild(oScanner);
 		container.interactive = true;
 		container
 			.on('mousemove', event => {
+				clearTimeout(debounceTimer);
+
 				const x = Math.min(Math.max(event.data.global.x - bounds.x, 0), bounds.width);
-				const { start, end } = context.state.chart.timeline;
-				const currentDate = new Date(Math.trunc(x / bounds.width * (end - start) + start));
+				const { timeline, tooltip } = context.state.chart;
+				const { start, end } = timeline;
+				const currentTimestamp = Math.trunc(x / bounds.width * (end - start) + start);
+				const currentDate = new Date(currentTimestamp);
 
 				oScanner.x = x;
 				oCurrent.text = getFullTimeString(currentDate);
+				debounceTimer = setTimeout(() => tooltip.setPosition(currentTimestamp), 30);
 			});
 
 		function clearAll() {

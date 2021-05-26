@@ -12,14 +12,8 @@ export class Chart extends Box {
 		const { container, context } = box;
 		const { CHART_PADDING_BOTTOM } = context.state.SIZE;
 		const oBorder = new Graphics();
-		const bounds = { x: 0 };
 
-		container.interactive = true;
-		// oScanner.visible = false;
-		// oScanner.addChild(oCurrent);
 		container.addChild(oBorder);
-
-
 		// const state = {
 		// 	scannerTimer: null
 		// };
@@ -27,7 +21,7 @@ export class Chart extends Box {
 		function drawBorder() {
 			oBorder
 				.clear().lineStyle(1, 0x999999, 1)
-				.drawRect(0, 0, box.width, box.height  - CHART_PADDING_BOTTOM);
+				.drawRect(0, 0, box.width, box.height - CHART_PADDING_BOTTOM);
 		}
 
 		// .on('sampling-on', () => {
@@ -51,9 +45,6 @@ export class Chart extends Box {
 				});
 
 				drawBorder();
-				// drawScanner();
-				bounds.x = labelWidth + SIZE.GUTTER + 3;
-				console.log(bounds.x);
 			});
 	}
 }

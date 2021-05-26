@@ -23,7 +23,8 @@ export default function ContextState(context) {
 	const chart = {
 		scroller: { length: 40, start: 0 },
 		timeline: { start: now, end: now + 40000, grid: false },
-		scale: { pixel: 100, microvolt: 2000 }
+		scale: { pixel: 100, microvolt: 2000 },
+		tooltip: { index: 0 }
 	};
 
 	const channel = {
@@ -142,6 +143,19 @@ export default function ContextState(context) {
 					this.microvolt = (Math.trunc(microvolt / step) + (up ? 1 : -1)) * step;
 				}
 			}),
+			tooltip: {
+				get position() {
+					return chart.tooltip.index;
+				},
+				setPosition(value) {
+					const index = channel.timeList.findIndex(timestamp => value < timestamp);
+
+					if (index !== -1 && index !== chart.tooltip.index) {
+						chart.tooltip.index = index;
+						context.emit('value-select');
+					}
+				}
+			},
 			timeline: Object.freeze({
 				get start() {
 					return chart.timeline.start;
@@ -209,8 +223,8 @@ export default function ContextState(context) {
 						name: channelOptions.name,
 						reference: channelOptions.reference,
 						data: new Array(500).fill(1).map(() => randomInt(-80, 80)),
-						last: 0,
-						index
+						index,
+						style: channelOptions.style || {}
 					};
 				});
 

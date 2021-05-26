@@ -21,7 +21,7 @@ export const CHANNEL_OPTIONS_SAMPLE = {
 	all: [
 		{ name: 'M1', reference: [] },
 		{ name: 'M2', reference: [] },
-		{ name: 'MGFP', reference: [] },
+		{ name: 'MGFP', reference: [], style: { color: 0xFF0000 } },
 		{ name: 'EVENT', reference: [] }
 	].concat(CHANNEL_LIST),
 	top: [3],

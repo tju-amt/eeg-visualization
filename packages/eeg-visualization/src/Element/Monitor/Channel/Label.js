@@ -42,8 +42,13 @@ export class Label extends Box {
 			TextStyle.label.fontSize = TextStyle.reference.fontSize = channelHeight;
 
 			function createObjectLabel(channel, index, initY = 0) {
-				const oLabel = new Text(channel.name, TextStyle.label);
+				const textStyle = TextStyle.label.clone();
+				const oLabel = new Text(channel.name, textStyle);
 				const oReference = new Text(channel.reference.join(','), TextStyle.reference);
+
+				if (channel.style.color) {
+					textStyle.fill = channel.style.color;
+				}
 
 				oLabel.addChild(oReference);
 				oLabel.y = initY + index * channelHeight;
